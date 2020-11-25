@@ -17,6 +17,8 @@ import { ProfileScreen } from './ProfileScreen';
 import { ProfileEditScreen } from './ProfileEditScreen';
 import { CameraScreen } from './CameraScreen';
 import { ImageScreen } from './ImagePicker';
+import { PortfolioEditScreen } from './PortfolioEditScreen';
+
 
 
 import { render } from 'react-dom';
@@ -97,6 +99,7 @@ class ProfileStackScreen extends React.Component {
         <ProfileStack.Screen name="Edit Profile" component={ProfileEditScreen} />
         <ProfileStack.Screen name="Camera Screen" component={CameraScreen} />
         <ProfileStack.Screen name="Image Picker" component={ImageScreen} />
+        <ProfileStack.Screen name="Edit Portfolio" component={PortfolioEditScreen} />
 
       </ProfileStack.Navigator>
     );
