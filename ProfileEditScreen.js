@@ -30,14 +30,18 @@ export class ProfileEditScreen extends React.Component {
             {label: "Education", placeholder:"School or certificate", iconName:"school"},
             {label: "Company", placeholder:"Recent company", iconName:"briefcase"},
             {label: "Website", placeholder:"My portfolio website", iconName:"web"},
+            {label: "Linkedin", placeholder:"Linkedin URL", iconName:"linkedin"},
+            {label: "Job Title", placeholder:"My latest job title", iconName:"account-box"},
 
         ],
 
         editable: true,
         infoName: '',
+        infoJobTitle:'',
         infoSchool:'',
         infoCompany:'',
         infoWeb:'',
+        infoLinkedin:'',
     }
 
     
@@ -60,9 +64,11 @@ onInfoUpdate = ()=>{
     console.log('hi')
     this.setState({
         infoName: this.userInfo.userName,
+        infoJobTitle: this.userInfo.userJob,
         infoSchool: this.userInfo.userSchool,
         infoCompany:this.userInfo.userCompany,
-        infoWeb: this.userInfo.userWeb
+        infoWeb: this.userInfo.userWeb,
+        infoLinkedin: this.userInfo.userLinkedin
     })
 
 }
@@ -76,20 +82,24 @@ onSaveInfo = async () =>{
         // console.log("here?");
 
         let userInfo = await this.dataModel.saveProfile(
-            this.state.infoName, 
+            this.state.infoName,
+            this.state.infoJobTitle, 
             this.state.infoSchool, 
             this.state.infoCompany, 
             this.state.infoWeb,
+            this.state.infoLinkedin,
             this.props.route.params.userId,
             this.userInfo.key,
             );
     }else{
         console.log("I am new");
         let userInfo = await this.dataModel.saveProfile(
-            this.state.infoName, 
+            this.state.infoName,
+            this.state.infoJobTitle, 
             this.state.infoSchool, 
             this.state.infoCompany, 
             this.state.infoWeb,
+            this.state.infoLinkedin,
             this.props.route.params.userId,
             
             );
@@ -145,6 +155,7 @@ return (
                                 info={this.state.infoName}  
                                 placeholder={this.state.profileInfo[0].placeholder} 
                                 editable={this.state.editable}
+                                textContentType='name'
                                 onChange = {(text) =>{this.setState({infoName: text.nativeEvent.text})}}
                                 value = {this.state.infoName}
         />
@@ -169,8 +180,27 @@ return (
                             info={this.state.infoWeb}  
                             placeholder={this.state.profileInfo[3].placeholder} 
                             editable={this.state.editable}
+                            textContentType='URL'
                             onChange = {(text) =>{this.setState({infoWeb:text.nativeEvent.text})}}
                             value = {this.state.infoWeb}
+        />
+        <EditInfo icon={this.state.profileInfo[4].iconName} 
+                            label={this.state.profileInfo[4].label} 
+                            info={this.state.infoLinkedin}  
+                            placeholder={this.state.profileInfo[4].placeholder} 
+                            editable={this.state.editable}
+                            textContentType='URL'
+                            onChange = {(text) =>{this.setState({infoLinkedin:text.nativeEvent.text})}}
+                            value = {this.state.infoLinkedin}
+        />
+         <EditInfo icon={this.state.profileInfo[5].iconName} 
+                            label={this.state.profileInfo[5].label} 
+                            info={this.state.infoJobTitle}  
+                            placeholder={this.state.profileInfo[5].placeholder} 
+                            editable={this.state.editable}
+                            textContentType='jobTitle'
+                            onChange = {(text) =>{this.setState({infoJobTitle:text.nativeEvent.text})}}
+                            value = {this.state.infoJobTitle}
         />
     </View>
 );

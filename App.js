@@ -10,14 +10,16 @@ import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 
 import { getDataModel } from './DataModel';
-import { UserContext } from './Context';
 
-import { LoginScreen } from './LoginScreen';
+
+import { LoginScreen, UserContext } from './LoginScreen';
 import { ProfileScreen } from './ProfileScreen';
 import { ProfileEditScreen } from './ProfileEditScreen';
 import { CameraScreen } from './CameraScreen';
 import { ImageScreen } from './ImagePicker';
 import { PortfolioEditScreen } from './PortfolioEditScreen';
+import { DesignersScreen } from './DesignerScreen';
+import { DesignerProfileScreen } from './DesignerProfileScreen';
 
 
 
@@ -28,54 +30,32 @@ import { render } from 'react-dom';
 
 
 
-class DesignersScreen extends React.Component {
-   constructor(props) {
-    super(props);
-    this.state = {
-      message: 'None'
-    }
-  }
-render(){
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Other designers!</Text>
-      <Button
-        title="Go to Edit Profile"
-        onPress={() => this.props.navigation.navigate('Designers Profile')}
-      />
-    </View>
-  );
-}}
 
-class DesignerProfileScreen extends React.Component {
-   constructor(props) {
-    super(props);
-    this.state = {
-      message: 'None'
-    }
-  }
-render(){
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Profile of designers!</Text>
-    </View>
-  );
-}}
+// class DesignerProfileScreen extends React.Component {
+//    constructor(props) {
+//     super(props);
+//     this.state = {
+//       message: 'None'
+//     }
+//   }
+// render(){
+//   return (
+//     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//       <Text>Profile of designers!</Text>
+//     </View>
+//   );
+// }}
 
-class ChatScreen extends React.Component {
-   constructor(props) {
-    super(props);
-    this.state = {
-      message: 'None'
-    }
-  }
-render(){
+function ChatScreen () {
+  const userInfo = React.useContext(UserContext);
+  console.log("what's user info",userInfo)
   return (
+    
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Chats!</Text>
     </View>
   );
-}}
+}
 
 const ProfileStack = createStackNavigator();
 
@@ -108,22 +88,32 @@ class ProfileStackScreen extends React.Component {
 
 const DesignerStack = createStackNavigator();
 
-function DesignerStackScreen() {
+class DesignerStackScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    // console.log("on designer stack",this.props.navigation.getParam('currentUserInfo'));
+    console.log("on designer stack context",this.context);
+    this.dataModel = getDataModel();
+}
+  render(){
+
   return (
     <DesignerStack.Navigator>
       <DesignerStack.Screen name="Designers" component={DesignersScreen} />
-      <DesignerStack.Screen name="Designers Profile" component={DesignerProfileScreen} />
+      <DesignerStack.Screen name="Designer Profile" component={DesignerProfileScreen} />
     </DesignerStack.Navigator>
   );
+  }
 }
 
 const ChatStack = createStackNavigator();
 
 function ChatStackScreen() {
+  
   return (
     <ChatStack.Navigator>
       <ChatStack.Screen name="Chat" component={ChatScreen} />
-      <ChatStack.Screen name="Designers Profile" component={DesignerProfileScreen} />
+      <ChatStack.Screen name="Designer Profile" component={DesignerProfileScreen} />
     </ChatStack.Navigator>
   );
 }
@@ -131,17 +121,20 @@ function ChatStackScreen() {
 const Tab = createBottomTabNavigator();
 
 class Tabs extends React.Component {
-
+ 
   constructor(props) {
     super(props);
-    console.log("on tab",this.props.route);
-
+    console.log("on tabs",this.props.route.params);
+    this.props.navigation.setParams(({currentUserInfo:this.props.route.params}));
+    console.log("on tab context",this.context);
+    console.log("on tabs post setting",this.props.route.params);
     this.dataModel = getDataModel();
 }
   render(){
+    console.log("on tab context",this.context);
   return (
     // <NavigationContainer>
-    // <UserContext.Provider >
+    // <UserContext.Consumer>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -173,13 +166,13 @@ class Tabs extends React.Component {
             }}
         /> */}
       </Tab.Navigator>
-      // </UserContext.Provider>
+  //  </UserContext.Consumer>
   );
 }
 }
 
 const Stack = createStackNavigator();
-
+Tab.contextType = UserContext;
 export default class App extends React.Component {
   constructor(props) {
     super(props);

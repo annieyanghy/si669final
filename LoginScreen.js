@@ -1,8 +1,10 @@
 import React from 'react';
+
 import { TextInput, Text, View, Image, TouchableOpacity, KeyboardAvoidingView, Alert, Button, FlatList} 
     from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Input } from "react-native-elements";
 
 import { getDataModel } from './DataModel';
 import { loginStyles, colors } from './Styles';
@@ -10,6 +12,7 @@ import { loginStyles, colors } from './Styles';
 
 
 
+export const UserContext = React.createContext(undefined);
 
 
 export class LoginScreen extends React.Component {
@@ -17,15 +20,23 @@ export class LoginScreen extends React.Component {
     super(props);
 
     this.dataModel = getDataModel();
-
+    this.currentUserInfo = {
+        currentUser: {},
+        userId: "",
+    };
     this.state = {
-    mode: 'login',
-    emailInput: '',
-    displayNameInput: '',
-    passwordInput: '',
-    passwordCheckInput: ''
+        mode: 'login',
+        emailInput: '',
+        displayNameInput: '',
+        passwordInput: '',
+        passwordCheckInput: '',
+        currentUser: {},
+        userId: "",
     }
 }
+
+
+
 
 onCreateAccount = async () => {
 
@@ -74,7 +85,15 @@ onLogin = () => {
     if (user.email === email) {
         if (user.password === pass) {
         // success!
+        // this.currentUserInfo.currentUser = user;
+        // this.currentUserInfo.userId = user.key;
+        // console.log("what's current user info on login?",this.currentUserInfo);
         console.log("who is loging?",user);
+        this.dataModel.saveWhoIsUser(user, user.key);
+        this.setState({
+            currentUser:user,
+            userId: user.key
+        });
         this.props.navigation.navigate("Tab", {
             screen:"Profile Stack",
             params:{
@@ -99,112 +118,129 @@ onLogin = () => {
 
 render() {
     return (
-    <KeyboardAvoidingView 
-        style={loginStyles.container}
-        behavior={"height"}
-        keyboardVerticalOffset={10}>
-        <View style={loginStyles.topView}>
-        <Image 
-            source={require('./assets/favicon.png')}
-            style={loginStyles.logoImage}
-        />
-        </View>
-        <View style={loginStyles.middleView}>
-        <View style={loginStyles.inputRow}>
-            <Text 
-            style={loginStyles.inputLabel}
-            >Email:</Text>
-            <TextInput
-            style={loginStyles.inputText}
-            keyboardType='email-address'
-            autoCapitalize='none'
-            autoCorrect={false}
-            autoCompleteType='email'
-            textContentType='emailAddress'
-            value={this.state.emailInput}
-            onChangeText={(text)=>{this.setState({emailInput: text})}}
-            />
-        </View>
-        {this.state.mode === 'create' ? (
-            <View style={loginStyles.inputRow}>
-            <Text style={loginStyles.inputLabel}>Display Name:</Text>
-            <TextInput
-                style={loginStyles.inputText}
-                autoCapitalize='none'
-                autoCorrect={false}
-                value={this.state.displayNameInput}
-                onChangeText={(text)=>{this.setState({displayNameInput: text})}}
-            />
-            </View>
-        ):(
-            <View/>
-        )}
-        <View style={loginStyles.inputRow}>
-            <Text style={loginStyles.inputLabel}>Password:</Text>
-            <TextInput
-            style={loginStyles.inputText}
-            autoCapitalize='none'
-            autoCorrect={false}
-            textContentType='password'
-            value={this.state.passwordInput}
-            onChangeText={(text)=>{this.setState({passwordInput: text})}}
-        />
-        </View>
-        {this.state.mode === 'create' ? (
-            <View style={loginStyles.inputRow}>
-            <Text style={loginStyles.inputLabel}>Re-enter Password:</Text>
-            <TextInput
-                style={loginStyles.inputText}
-                autoCapitalize='none'
-                autoCorrect={false}
-                textContentType='password'  
-                value={this.state.passwordCheckInput}
-                onChangeText={(text)=>{this.setState({passwordCheckInput: text})}}
-            />
-            </View>
-        ):(
-            <View/>
-        )}
-        </View>
-        {this.state.mode === 'login' ? (
+     
+            <KeyboardAvoidingView 
+                style={loginStyles.container}
+                behavior={"height"}
+                keyboardVerticalOffset={10}>
+                <View style={loginStyles.topView}>
+                <Image 
+                    source={require('./assets/favicon.png')}
+                    style={loginStyles.logoImage}
+                />
+                </View>
+                <View style={loginStyles.middleView}>
+                <View style={loginStyles.inputRow}>
+                    {/* <Text 
+                    style={loginStyles.inputLabel}
+                    >Email:</Text> */}
+                    <Input
+                    label='Email'
+                    labelStyle={{fontSize:14}}
+                    leftIcon={{size:18,type:'material-community', name:'email',color:'gray'}}
+                    style={loginStyles.inputText}
+                    keyboardType='email-address'
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                    autoCompleteType='email'
+                    textContentType='emailAddress'
+                    value={this.state.emailInput}
+                    onChangeText={(text)=>{this.setState({emailInput: text})}}
+                    />
+                </View>
+                {this.state.mode === 'create' ? (
+                    <View style={loginStyles.inputRow}>
+                    {/* <Text style={loginStyles.inputLabel}>Display Name:</Text> */}
+                    <Input
+                        label='User name'
+                        labelStyle={{fontSize:14}}
+                        leftIcon={{size:18,type:'material-community', name:'camera-account',color:'gray'}}
+                        style={loginStyles.inputText}
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        value={this.state.displayNameInput}
+                        onChangeText={(text)=>{this.setState({displayNameInput: text})}}
+                    />
+                    </View>
+                ):(
+                    <View/>
+                )}
+                <View style={loginStyles.inputRow}>
+                    {/* <Text style={loginStyles.inputLabel}>Password:</Text> */}
+                    <Input
+                        label='Password'
+                        labelStyle={{fontSize:14}}
+                        leftIcon={{size:18,type:'material-community', name:'lock',color:'gray'}}
 
-        <View style={loginStyles.bottomView}>
-            <TouchableOpacity 
-            style={loginStyles.buttonContainer}
-            onPress={()=>{
-                this.setState({mode: 'create'})
-            }}
-            >
-            <Text style={loginStyles.buttonText}>Create Account</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-            style={loginStyles.buttonContainer}
-            onPress={this.onLogin}
-            >
-            <Text style={loginStyles.buttonText}>Login</Text>
-            </TouchableOpacity>
-        </View>
+                        style={loginStyles.inputText}
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        textContentType='password'
+                        value={this.state.passwordInput}
+                        onChangeText={(text)=>{this.setState({passwordInput: text})}}
+                />
+                </View>
+                {this.state.mode === 'create' ? (
+                    <View style={loginStyles.inputRow}>
+                    {/* <Text style={loginStyles.inputLabel}>Re-enter Password:</Text> */}
+                    <Input
+                        label='Confirm password' 
+                        labelStyle={{fontSize:14}}  
+                        leftIcon={{size:18,type:'material-community', name:'lock',color:'gray'}}
 
-        ):(
+                        style={loginStyles.inputText}
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        textContentType='password'  
+                        value={this.state.passwordCheckInput}
+                        onChangeText={(text)=>{this.setState({passwordCheckInput: text})}}
+                    />
+                    </View>
+                ):(
+                    <View/>
+                )}
+                </View>
+                {this.state.mode === 'login' ? (
 
-        <View style={loginStyles.bottomView}>
-            <TouchableOpacity 
-            style={loginStyles.buttonContainer}
-            onPress={()=>{
-                this.setState({mode: 'login'})
-            }}
-            >
-            <Text style={loginStyles.buttonText}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-            style={loginStyles.buttonContainer}
-            onPress={this.onCreateAccount}
-            >
-            <Text style={loginStyles.buttonText}>Create</Text>
-            </TouchableOpacity>
-        </View>
-        )}
-    </KeyboardAvoidingView>
+                <View style={loginStyles.bottomView}>
+                    <TouchableOpacity 
+                    style={loginStyles.buttonContainer}
+                    onPress={()=>{
+                        this.setState({mode: 'create'})
+                    }}
+                    >
+                    <Text style={loginStyles.buttonText}>Create Account</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                    style={loginStyles.buttonContainer}
+                    onPress={this.onLogin}
+                    >
+                    <Text style={loginStyles.buttonText}>Login</Text>
+                    </TouchableOpacity>
+                </View>
+
+                ):(
+
+                <View style={loginStyles.bottomView}>
+                    <TouchableOpacity 
+                    style={loginStyles.buttonContainer}
+                    onPress={()=>{
+                        this.setState({mode: 'login'})
+                    }}
+                    >
+                    <Text style={loginStyles.buttonText}>Login</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                    style={loginStyles.buttonContainer}
+                    onPress={this.onCreateAccount}
+                    >
+                    <Text style={loginStyles.buttonText}>Create</Text>
+                    </TouchableOpacity>
+                </View>
+                )}
+            </KeyboardAvoidingView>
+     
     )
 }
 }
+

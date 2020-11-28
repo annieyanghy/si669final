@@ -15,17 +15,21 @@ export class EditInfo extends React.Component {
     return (
         <View style={profileStyles.profileListContainer}>
             <View style={profileStyles.profileList}>
-                <MaterialCommunityIcons name={this.props.icon} style={profileStyles.infoIcon} />
+                
                 <Text style={profileStyles.infoLabel}>{this.props.label}</Text>
-                <TextInput style={profileStyles.infoInput} 
-                            placeholder={this.props.placeholder}
-                            autoCorrect={false}
-                            editable={this.props.editable}
-                            autoCapitalize = 'none'
-                            value = {this.props.infoInputValue}
-                            onChange = {this.props.onChange}
+                <View  style={profileStyles.inputContainer}>
+                    <MaterialCommunityIcons name={this.props.icon} style={profileStyles.infoIcon} />
+                    <TextInput style={profileStyles.infoInput} 
+                                placeholder={this.props.placeholder}
+                                autoCorrect={false}
+                                editable={this.props.editable}
+                                autoCapitalize = 'none'
+                                value = {this.props.infoInputValue}
+                                onChange = {this.props.onChange}
+                                textContentType = {this.props.textContentType}
 
-                >{this.props.info}</TextInput>
+                    >{this.props.info}</TextInput>
+                </View>
         </View>
     </View>
     );

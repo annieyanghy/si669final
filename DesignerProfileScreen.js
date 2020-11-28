@@ -20,20 +20,20 @@ import { Card, Title, Paragraph, Button, IconButton, Subheading, Caption, Headli
 
 
 import { getDataModel } from "./DataModel";
-import { profileStyles, colors } from "./Styles";
+import { designerStyles, profileStyles, colors } from "./Styles";
 import { EditInfo } from "./Component";
 
-export class ProfileScreen extends React.Component {
+export class DesignerProfileScreen extends React.Component {
   constructor(props) {
     super(props);
     this.dataModel = getDataModel();
-    this.userInfo = this.props.route.params.userInfoKey;
+    this.userInfo = this.props.route.params.viewedDesigner;
     this.currentUser = this.props.route.params.currentUser;
-    this.userId = this.props.route.params.userId;
+    this.userId = this.props.route.params.viewedDesigner.userId;
     this.portfoKey = this.props.route.params.portfoKey;
     this.userPic = [];
     this.userPortfo =[];
-    
+    console.log(this.props.route);
     this.portfoPic ='';
     this.state = {
       profileInfo: [
@@ -99,7 +99,7 @@ export class ProfileScreen extends React.Component {
   };
 
   subscribeToInfo = async () => {
-    let userId = this.props.route.params.userId;
+    let userId = this.props.route.params.viewedDesigner.userId;
     this.userInfo = await this.dataModel.loadProfile(userId);
     console.log("profile page subscribe", this.userInfo);
     this.onInfoUpdate();
@@ -117,7 +117,7 @@ export class ProfileScreen extends React.Component {
   };
 
   loadPic = async()=>{
-    let userId = this.props.route.params.userId;
+    let userId = this.props.route.params.viewedDesigner.userId;
     this.userPic = await this.dataModel.loadProfilePic(userId);
     this.onPicUpdate(this.userPic);
   }
@@ -125,7 +125,7 @@ export class ProfileScreen extends React.Component {
   subscribeToUserPic = async()=>{
     let picData = this.props.route.params.picData;
     console.log("pic data", this.props.route.params.picData);
-    let userId = this.props.route.params.userId;
+    let userId = this.props.route.params.viewedDesigner.userId;
     let url = await this.dataModel.saveProfileImage(userId, picData);
    
     this.onPicUpdate(url);
@@ -138,7 +138,7 @@ export class ProfileScreen extends React.Component {
   }
 
   subscribeToPortfo = async () => {
-    let userId = this.props.route.params.userId;
+    let userId = this.props.route.params.viewedDesigner.userId;
     
     let templist = await this.dataModel.loadPortfo(userId);
     
@@ -154,9 +154,6 @@ export class ProfileScreen extends React.Component {
       this.onPortfoPicUpdate(this.portfoPic);
       this.onPortfoUpdate();
     }
-   
-    console.log("yoyoyo",this.userPortfo);
-
   };
 
   onPortfoUpdate = () => {
@@ -166,25 +163,6 @@ export class ProfileScreen extends React.Component {
       portfoList: this.userPortfo,
     });
   };
-  
-  // loadPortfoPic = async()=>{
-  //   let userId = this.props.route.params.userId;
-  //   console.log("hey yo!",this.props.route.params)
-  //   console.log("hey yo!",this.portfoKey)
-    
-  //   this.portfoPic = await this.dataModel.loadPortfoPic(userId, this.portfoKey);
-  //   this.onPortfoPicUpdate(this.portfoPic);
-  // }
-
-  // subscribeToPortfoPic = async()=>{
-  //   let picData = this.props.route.params.picData;
-  //   console.log("hihihi");
-  //   console.log("pic data", this.props.route.params.picData);
-  //   let userId = this.props.route.params.userId;
-  //   let url = await this.dataModel.savePortfoImage(userId,this.portfoKey, picData);
-  //   this.onPicUpdate(url);
-  // }
-
   onPortfoPicUpdate = (pic)=>{
     console.log("portfolio piccccc",pic);
     this.setState({
@@ -196,8 +174,6 @@ export class ProfileScreen extends React.Component {
     return (
       
       <View style={profileStyles.container}>
-
-
           <View style={profileStyles.portfoContainer}>
               <FlatList
               data={this.state.portfoList}
@@ -214,40 +190,6 @@ export class ProfileScreen extends React.Component {
                       placeholderStyle={{ backgroundColor: colors.primaryLight }}
                       size="large"
                     >
-                      <Accessory
-                        size={26}
-                        underlayColor={colors.primary}
-                        name='pencil'
-                        type='material-community'
-                      
-                        onPress={() =>
-                          ActionSheetIOS.showActionSheetWithOptions(
-                            {
-                              options: ["Cancel", "Upload from albums", "Take a picture"],
-                              // destructiveButtonIndex: 2,
-                              cancelButtonIndex: 0,
-                            },
-                            (buttonIndex) => {
-                              if (buttonIndex === 0) {
-                                // cancel actionexpo start
-                              } else if (buttonIndex === 1) {
-                                this.props.navigation.navigate("Image Picker", {
-                                  currentUser: this.currentUser,
-                                  userId: this.userId,
-                                  userInfoKey: !this.userInfo ? -1 : this.userInfo.key,
-                                });
-                              } else if (buttonIndex === 2) {
-                                console.log(this.userInfo);
-                                this.props.navigation.navigate("Camera Screen", {
-                                  currentUser: this.currentUser,
-                                  userId: this.userId,
-                                  userInfoKey: !this.userInfo ? -1 : this.userInfo.key,
-                                });
-                              }
-                            }
-                          )
-                        }
-                      />
                     </Avatar>
                     
                   </View>
@@ -275,47 +217,19 @@ export class ProfileScreen extends React.Component {
                       />
                       </View>
                   </View>
-                  <View style={profileStyles.actionContainer}>
-                    <Button icon="pencil" mode="text" 
+                  <View style={designerStyles.actionContainer}>
+                    <Button icon="comment" mode="contained" 
                         color={colors.primary}
                         style={{height:32}}
-                        labelStyle={{color:colors.primary, fontSize:14}}
+                        labelStyle={{color:colors.primaryLight, fontSize:14}}
                         onPress={() =>
-                        this.props.navigation.navigate("Edit Profile", {
+                        this.props.navigation.navigate("Chat", {
                           currentUser: this.currentUser,
                           userId: this.userId,
                         })
                       }
-                        >Edit</Button>
+                        >Chat</Button>
                   </View>
-                  {/* <EditInfo
-                    icon={this.state.profileInfo[0].iconName}
-                    // label={this.state.profileInfo[0].label}
-                    info={this.state.infoName}
-                    placeholder={this.state.profileInfo[0].placeholder}
-                    editable={this.state.editable}
-                  />
-                  <EditInfo
-                    icon={this.state.profileInfo[1].iconName}
-                    // label={this.state.profileInfo[1].label}
-                    info={this.state.infoSchool}
-                    placeholder={this.state.profileInfo[1].placeholder}
-                    editable={this.state.editable}
-                  />
-                  <EditInfo
-                    icon={this.state.profileInfo[2].iconName}
-                    // label={this.state.profileInfo[2].label}
-                    info={this.state.infoCompany}
-                    placeholder={this.state.profileInfo[2].placeholder}
-                    editable={this.state.editable}
-                  /> */}
-                  {/* <EditInfo
-                    icon={this.state.profileInfo[3].iconName}
-                    label={this.state.profileInfo[3].label}
-                    info={this.state.infoWeb}
-                    placeholder={this.state.profileInfo[3].placeholder}
-                    editable={this.state.editable}
-                  /> */}
                     <Divider style={profileStyles.dividerStyle} />
                     <Title>My Portfolio</Title>
         </View>
@@ -344,7 +258,7 @@ export class ProfileScreen extends React.Component {
                         >Open URL
                         </Button>
 
-                        <Button icon="pencil" mode="outline" 
+                        {/* <Button icon="pencil" mode="outline" 
                         color={colors.primary}
                         labelStyle={{color:colors.primary}}
                         onPress={ ()=>
@@ -360,7 +274,7 @@ export class ProfileScreen extends React.Component {
                         color={colors.primary}
                         labelStyle={{color:colors.primary}}
                         onPress={()=>this.dataModel.onDeletePortfo(item, this.userId)}
-                        ></Button>
+                        ></Button> */}
                       </Card.Actions>
                     </Card>
                       
@@ -371,18 +285,6 @@ export class ProfileScreen extends React.Component {
               />
 
           </View>
-          <Button
-                icon="plus"
-                size={15}
-                color={colors.primary}
-                mode="contained"
-                labelStyle={{color:'white'}}
-                onPress={ ()=>
-                  this.props.navigation.navigate("Edit Portfolio", {
-                        currentUser: this.currentUser,
-                        userId: this.userId,
-                      })}
-            >Add Portfolio</Button>
       </View>
       
       

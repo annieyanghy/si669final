@@ -51,9 +51,14 @@ export class ImageScreen extends React.Component {
         });
     
         console.log(picData);
-    
+        console.log(this.props.route.params.mode );
         if (!picData.cancelled) {
-            this.props.navigation.navigate('Profile',{picData:picData});
+            if (this.props.route.params.mode == 'portfolio'){
+                this.props.navigation.navigate('Edit Portfolio',{picData:picData});
+            }else{
+                this.props.navigation.navigate('Profile',{picData:picData});
+            }
+           
             // this.setState({
             //     pickedImage:picData.uri
             // })
