@@ -79,7 +79,7 @@ onSaveInfo = async () =>{
     // console.log("hihihi");
 
     if(this.userInfo){
-        // console.log("here?");
+        console.log("here?",this.userInfo);
 
         let userInfo = await this.dataModel.saveProfile(
             this.state.infoName,
@@ -89,7 +89,7 @@ onSaveInfo = async () =>{
             this.state.infoWeb,
             this.state.infoLinkedin,
             this.props.route.params.userId,
-            this.userInfo.key,
+            this.userInfo.infoKey,
             );
     }else{
         console.log("I am new");
@@ -103,10 +103,10 @@ onSaveInfo = async () =>{
             this.props.route.params.userId,
             
             );
-    }
+    };
 
     this.props.navigation.navigate('Profile',{
-        userInfoKey:!this.userInfo?-1:this.userInfo.key
+        userInfoKey:!this.userInfo?-1:this.userInfo.infoKey
     });
     
 }

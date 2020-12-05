@@ -24,7 +24,7 @@ export class ImageScreen extends React.Component {
 
         this.state = {
         hasCameraRollPermission: null,
-        pickedImage:' []'
+        // pickedImage:' []'
         };  
     }
 

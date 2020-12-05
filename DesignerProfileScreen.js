@@ -21,14 +21,15 @@ import { Card, Title, Paragraph, Button, IconButton, Subheading, Caption, Headli
 
 import { getDataModel } from "./DataModel";
 import { designerStyles, profileStyles, colors } from "./Styles";
-import { EditInfo } from "./Component";
+
 
 export class DesignerProfileScreen extends React.Component {
   constructor(props) {
     super(props);
     this.dataModel = getDataModel();
-    this.userInfo = this.props.route.params.viewedDesigner;
+   
     this.currentUser = this.props.route.params.currentUser;
+    this.userInfo = this.props.route.params.viewedDesigner;
     this.userId = this.props.route.params.viewedDesigner.userId;
     this.portfoKey = this.props.route.params.portfoKey;
     this.userPic = [];
@@ -71,6 +72,7 @@ export class DesignerProfileScreen extends React.Component {
       portDscrp: "",
       portURL: "",
       portfoImage:"",
+      following: false
     };
   }
 
@@ -82,7 +84,7 @@ export class DesignerProfileScreen extends React.Component {
       this.onFocus
     );
     this.loadPic();
-   
+    this.checkFollowing();
 
   };
 
@@ -94,7 +96,9 @@ export class DesignerProfileScreen extends React.Component {
     this.subscribeToInfo();
     this.subscribeToUserPic();
     this.subscribeToPortfo();
+    this.checkFollowing();
     // this.loadPortfoPic();
+    console.log("following state",this.state.following)
 
   };
 
@@ -170,6 +174,35 @@ export class DesignerProfileScreen extends React.Component {
     })
   }
 
+  checkFollowing = async ()=>{
+    let checkFollowList =  await this.dataModel.loadFollowing(this.currentUser);
+    this.button;
+      for (let designer of checkFollowList){
+        if (this.userId == designer.docUserId){
+         this.button = true;
+         break; // important!!!! a break is so important in life and in code lol
+        }else if  (this.userId !== designer.docUserId){
+          this.button = false;
+        }
+      };
+      this.setState({
+        following: this.button
+      })
+    }
+
+    unfollow = () =>{
+      this.dataModel.unFollowOthers(this.currentUser,this.userInfo,this.userId);
+      this.setState({following:false})
+
+    }
+
+    follow=()=>{
+      this.dataModel.followOthers(this.currentUser,this.userInfo,this.userId);
+      this.setState({following:true})
+
+    }
+  
+
   render() {
     return (
       
@@ -218,17 +251,24 @@ export class DesignerProfileScreen extends React.Component {
                       </View>
                   </View>
                   <View style={designerStyles.actionContainer}>
-                    <Button icon="comment" mode="contained" 
+                    {this.state.following?
+                      <Button icon="heart" mode="outlined" 
+                        color={colors.primary}
+                        style={{height:32}}
+                        labelStyle={{color:colors.primary, fontSize:14}}
+                        onPress={() => this.unfollow()}>
+                        Following</Button>
+                      :
+                     <Button icon="heart-outline" mode="contained" 
                         color={colors.primary}
                         style={{height:32}}
                         labelStyle={{color:colors.primaryLight, fontSize:14}}
-                        onPress={() =>
-                        this.props.navigation.navigate("Chat", {
-                          currentUser: this.currentUser,
-                          userId: this.userId,
-                        })
-                      }
-                        >Chat</Button>
+                        onPress={() => this.follow()
+                      
+                      }>Follow</Button>
+                    
+                  }
+                   
                   </View>
                     <Divider style={profileStyles.dividerStyle} />
                     <Title>My Portfolio</Title>
@@ -237,7 +277,7 @@ export class DesignerProfileScreen extends React.Component {
               }
               ListEmptyComponent={() =>
                   <Text style={profileStyles.emptyMsg}>
-                    No portfolio yet.{"\n"}Tap "+" to add your work!
+                    {this.state.infoName} hasn't added any portfolio yet.
                   </Text>                
               }
               renderItem={({ item, index }) => {

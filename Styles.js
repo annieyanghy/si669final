@@ -370,6 +370,113 @@ export const profileStyles = StyleSheet.create({
                         
                         }
       });
+      export const chatFriendStyles = StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: '#fff',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          paddingTop: 20,
+        //   backgroundColor:'lightgray'
+        },
+          peopleListContainer: {
+            flex: 1,
+            flexDirection:'column',
+            justifyContent: 'space-around',
+            alignItems: 'stretch',
+            width: '90%',
+            // padding:5,
+            // backgroundColor:'lightblue'
+          },  
+            separator: {
+              backgroundColor: colors.primaryLight,
+              height: 1,
+              width: '50%',
+              alignSelf: 'center'
+            },
+            personCard: {
+              flex: 0.5,
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '50%',
+              paddingVertical: 10,
+              margin:5,
+              height:240,
+              backgroundColor:'white',
+              borderRadius:5,
+              shadowOffset:{
+                width:2,
+                height:2
+                },
+                shadowColor:'black',
+                shadowOpacity:0.3,
+                shadowRadius:4,
+            },
+            personRow: {
+                flex: 1,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '95%',
+                paddingVertical: 10,
+                margin:5,
+                height:120,
+                backgroundColor:'white',
+                borderRadius:5,
+                shadowOffset:{
+                  width:2,
+                  height:2
+                  },
+                  shadowColor:'black',
+                  shadowOpacity:0.3,
+                  shadowRadius:4,
+              },
+              avatarContainer:{
+                flex: 0.3,
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                // backgroundColor:'yellow'
+              },
+              designerInfoContainer:{
+                flex: 0.7,
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                alignItems: 'flex-start',
+                // backgroundColor:'pink'
+              },
+                actionContainer:{
+                    flex: 0.08,
+                    flexDirection: "row",
+                    alignItems: 'flex-start',
+                    justifyContent: 'center',
+                    // backgroundColor:'pink'
+                },
+                linkContainer:{
+                    flex: 1,
+                    flexDirection: "row",
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                },
+                    iconbuttonContainer:{
+                        shadowOffset:{
+                            width:0.5,
+                            height:0.5
+                        },
+                        shadowColor:'black',
+                        shadowOpacity:0.5,
+                        shadowRadius:1,
+                    },
+                        iconbutton:{
+                            width:28, 
+                            height:28, 
+                            margin:10, 
+                            backgroundColor:colors.primary, 
+                            borderRadius:50,
+                        
+                        }
+      });
 
 export const styles = StyleSheet.create({
     container: {

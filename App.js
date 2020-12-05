@@ -20,31 +20,13 @@ import { ImageScreen } from './ImagePicker';
 import { PortfolioEditScreen } from './PortfolioEditScreen';
 import { DesignersScreen } from './DesignerScreen';
 import { DesignerProfileScreen } from './DesignerProfileScreen';
+import { ChatFriendScreen } from './ChatFriendScreen';
 
 
 
 import { render } from 'react-dom';
 
 
-
-
-
-
-
-// class DesignerProfileScreen extends React.Component {
-//    constructor(props) {
-//     super(props);
-//     this.state = {
-//       message: 'None'
-//     }
-//   }
-// render(){
-//   return (
-//     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//       <Text>Profile of designers!</Text>
-//     </View>
-//   );
-// }}
 
 function ChatScreen () {
   const userInfo = React.useContext(UserContext);
@@ -101,6 +83,7 @@ class DesignerStackScreen extends React.Component {
     <DesignerStack.Navigator>
       <DesignerStack.Screen name="Designers" component={DesignersScreen} />
       <DesignerStack.Screen name="Designer Profile" component={DesignerProfileScreen} />
+      <ChatStack.Screen name="Chat" component={ChatScreen} />
     </DesignerStack.Navigator>
   );
   }
@@ -112,8 +95,9 @@ function ChatStackScreen() {
   
   return (
     <ChatStack.Navigator>
-      <ChatStack.Screen name="Chat" component={ChatScreen} />
-      <ChatStack.Screen name="Designer Profile" component={DesignerProfileScreen} />
+  
+      <ChatStack.Screen name="Chat" component={ChatFriendScreen} />
+      <ChatStack.Screen name="ChatScreen" component={ChatScreen} />
     </ChatStack.Navigator>
   );
 }

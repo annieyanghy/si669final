@@ -26,6 +26,7 @@ class DataModel {
     this.userPic = [];
     this.theCurrentUser ={};
    this.userInfoList =[];
+   this.followingList=[];
 
 
     this.theCallback = undefined;
@@ -36,6 +37,7 @@ class DataModel {
     this.loadUsers();
     this.loadProfile();
     this.getAllUserInfo();
+    
     // this.loadChats();
     //this.subscribeToChats();
 
@@ -147,12 +149,12 @@ class DataModel {
       let key = qDocSnap.id;
       console.log("user info key", qDocSnap.id);
       data = qDocSnap.data();
-      data.key = key;
+      data.infoKey = key;
 
       //save to local array-> need to use this.Info[0] to access data
       this.Info.push(data);
       // console.log("user info",data);
-      console.log("user info key", this.Info[0].key);
+      console.log("user info key", this.Info[0].infoKey);
     });
 
     console.log("user data", data);
@@ -160,6 +162,14 @@ class DataModel {
 
     return data;
   };
+
+  getUserForInfo =(id)=>{
+    for (let user of this.Info){
+      if (id == user.userInfoKey)
+      console.log("hello ni hao ma",user);
+      return user
+    }
+  }
 
   saveProfile = async (name, job, school, company, web, linkedin, userId, userInfoKey) => {
     console.log("hihihi");
@@ -177,14 +187,18 @@ class DataModel {
     console.log(userId);
     let userInfoColRef = await this.usersRef.doc(userId).collection("info");
     let userInfoDocRef;
-
-    if (userInfoKey) {
+    console.log(userInfoKey);
+    if (userInfoKey!==-1) {
       //update the edited info
       console.log("it's an old user updating the info", userInfoKey);
-      userInfoDocRef = userInfoColRef.doc(userInfoKey);
+      userInfoDocRef= await userInfoColRef.doc(userInfoKey);
+      console.log(userInfoDocRef.id);
       await userInfoDocRef.update(userInfo);
+      // console.log(userInfoDocRef.id);
+      // await userInfoDocRef.update(userInfo);
     } else {
       // this is a new user!
+      console.log("newbie!")
       userInfoDocRef = await userInfoColRef.add(userInfo);
     }
 
@@ -264,9 +278,7 @@ class DataModel {
   let data;
   this.Portfo = [];
   querySnap.forEach((qDocSnap) => {
-    
     let key = qDocSnap.id;
-
     data = qDocSnap.data();
     data.key = key;
 
@@ -281,6 +293,34 @@ class DataModel {
     //should return a list
   return this.Portfo;
 };
+
+loadThisPortfo = async (userId, portfoKey) => {
+  // load all of the users
+// console.log('hi');
+
+let querySnap = await this.usersRef.doc(userId).collection("portfolio").doc(portfoKey).get();
+let data = querySnap.data();
+this.Portfo = [];
+
+console.log("data data",data);
+
+// querySnap.forEach((qDocSnap) => {
+//   let key = qDocSnap.id;
+//   data = qDocSnap.data();
+//   data.key = key;
+
+//   //save to local array
+//   this.Portfo.push(data);
+//   // console.log("user info",data);
+//   console.log("user portfo key", this.Portfo[0].key);
+// });
+
+// console.log("portfo data", data);
+// console.log("in load portfo first line", this.Portfo);
+  //should return a list
+return data;
+};
+
 
   savePortfo = async (title, dscrp, web, userId, userPortfoKey) => {
 
@@ -380,11 +420,11 @@ class DataModel {
     return url;
   };
 
-  savePortfoImage = async (userId, portfoKey, portfoPicObject) => {
+  savePortfoImage = async (userId, portfoKey, portfoPicObject, portfoPicKey) => {
     if (this.theCallback) {
       this.theCallback(portfoPicObject);
     }
-
+    
     // in firebase storage
     let fileName = "" + Date.now();
     let imageRef = this.storageRef.child(fileName);
@@ -403,20 +443,97 @@ class DataModel {
       portfoPicURL: downloadURL,
     };
 
-    console.log("I alreadyregistered!");
-    let profilePicRef = await this.usersRef.doc(userId).collection('portfolio').doc(portfoKey).collection('portfoPic');
+    let portfoPicRef;
+    if (portfoKey){
+      //update portfolio picture
+      console.log("I am updating");
+      portfoPicRef= await this.usersRef.doc(userId).collection('portfolio').doc(portfoKey).collection('portfoPic');
+      await profilePicRef.update(portfoPicDoc);
+    }else{
+       //add new portfolio picture
+       console.log("I am adding, new portfolio");
+       let docRef= await this.usersRef.doc(userId).collection('portfolio').doc();
+       portfoKey = docRef.id;
+       portfoPicRef = await docRef.collection('portfoPic').add(portfoPicDoc);
+       portfoPicKey = portfoPicRef.id;
+       console.log(portfoPicRef.id);
+       console.log(portfoPicKey); 
+       console.log("new portfoKey",portfoKey);
+
+      //  let key = portfoPicKey.id;
+      //  portfoPicDoc.key = key;
+    }
+    
 
 
-    let portfoPicKey = await profilePicRef.add(portfoPicDoc);
-    let key = portfoPicKey.id;
-    portfoPicDoc.key = key;
+   
     console.log("hiiii");
-    console.log(portfoPicDoc);
-    this.loadProfilePic(userId);
+  
+    console.log(portfoKey);
+    
     console.log("loaded");
-    return downloadURL;
+    return portfoPicDoc;
   };
+
+
+
+  loadFollowing =async(currentUser)=>{
+    // let querysnap = await this.usersRef.doc(currentUser.userId).collection('following').get();
+    let followList = await this.usersRef.doc(currentUser.userId).collection('following').onSnapshot((querysnap)=>{
+      this.followingList=[];
+      querysnap.forEach((qDocFollowSnap)=>{
+        let data = qDocFollowSnap.data();
+          data.followingId = qDocFollowSnap.id;
+          console.log("following data",data);
+    
+          let docUserId = data.userId;
+          let followingDocKey = data.followingId;
+          let followingUser = {docUserId: docUserId, followingDocKey:followingDocKey}
+          this.followingList.push(followingUser);
+      })
+    });
+    // this.followingList=[];
+    // querysnap.forEach((qDocFollowSnap)=>{
+   
+    //   let data = qDocFollowSnap.data();
+    //   data.followingId = qDocFollowSnap.id;
+    //   console.log("following data",data);
+
+    //   let docUserId = data.userId;
+    //   let followingDocKey = data.followingId;
+    //   let followingUser = {docUserId: docUserId, followingDocKey:followingDocKey}
+    //   this.followingList.push(followingUser);
+   
+    // })
+    
+    return this.followingList
+  }
+
+  //--following other designers
+  followOthers=async(currentUser, followedDesigner, followedId)=>{
+    console.log(currentUser);
+    console.log(followedDesigner);
+    followedDesigner.userId = followedId;
+    let followingCol = await this.usersRef.doc(currentUser.userId).collection('following');
+    let followingRef = await followingCol.add(followedDesigner);
+    let key = followingRef.id;
+    console.log(key);
+  }
+
+//--unfollow other designers
+unFollowOthers =async(currentUser, followedDesigner, followedId)=>{
+  console.log(currentUser);
+  console.log(followedDesigner);
+  let unfollowedUser = this.followingList.find(designer =>designer.docUserId == followedId);
+  console.log("hey hey",unfollowedUser);
+  // followedDesigner.userId = followedId;
+  let unFollowingCol = await this.usersRef.doc(currentUser.userId).collection('following');
+  let unFollowingDocRef = await unFollowingCol.doc(unfollowedUser.followingDocKey);
+  await unFollowingDocRef.delete();
+  
 }
+}
+
 
 let theDataModel = undefined;
 

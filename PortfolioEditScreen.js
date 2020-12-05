@@ -26,7 +26,7 @@ export class PortfolioEditScreen extends React.Component {
     this.dataModel = getDataModel();
     this.currentUser = this.props.route.params.currentUser;
     this.userId = this.props.route.params.userId;
-    this.userPortfo=[];
+    this.userThisPortfo=[];
     this.portfoPic ='';
     
     this.props.navigation.setOptions({
@@ -43,6 +43,7 @@ export class PortfolioEditScreen extends React.Component {
     let initTitle;
     let initDscrp;
     let initURL;
+    console.log("routeeee", this.props.route.params.portfoContent);
     if (this.props.route.params.portfoKey){
         //edit portfolio
         this.portfoKey = this.props.route.params.portfoKey;
@@ -102,14 +103,16 @@ export class PortfolioEditScreen extends React.Component {
   onFocus = () => {
   
     this.subscribeToPortfoPic();
+    this.subscribeToThisPortfo();
    
   
 
   };
 
-  subscribeToPortfo = async () => {
+  subscribeToThisPortfo = async () => {
     let userId = this.props.route.params.userId;
-    this.userPortfo = await this.dataModel.loadPortfo(userId);
+    this.userThisPortfo = await this.dataModel.loadThisPortfo(userId, this.portfoKey);
+    console.log("holaaa",this.userThisPortfo);
     // cannot fetch a list, why?    
     this.onPortfoUpdate();
   };
@@ -117,17 +120,45 @@ export class PortfolioEditScreen extends React.Component {
   onPortfoUpdate = () => {
     console.log("hi");
     this.setState({
-      portTitle: this.userPortfo.portfoTitle,
-      portDscrp: this.userPortfo.portfoDscrp,
-      portURL: this.userPortfo.portfoURL,
+      portTitle: this.userThisPortfo.portfoTitle,
+      portDscrp: this.userThisPortfo.portfoDscrp,
+      portURL: this.userThisPortfo.portfoURL,
     });
    
   };
 
+ 
+  loadPic = async()=>{
+    let userId = this.props.route.params.userId;
+    this.portfoPic = await this.dataModel.loadPortfoPic(userId, this.portfoKey);
+    this.onPicUpdate(this.portfoPic);
+  }
+
+  subscribeToPortfoPic = async()=>{
+    let picData = this.props.route.params.picData;
+    this.portfoPicKey ="";
+    this.portfoKey;
+    let userId = this.props.route.params.userId;
+    this.portfoPicFile = await this.dataModel.savePortfoImage(userId,this.portfoKey, picData, this.portfoPicKey);
+    let url = this.portfoPicFile.portfoPicURL;
+    this.onPicUpdate(url);
+    console.log("ni hao",this.portfoKey);
+    //how to get this.portfoKey detected here after it's created by uploading picture?
+  }
+
+  onPicUpdate = (pic)=>{
+    console.log("currentuser",this.currentUser.imageURL);
+    console.log("this userPic",this.portfoPic);
+    console.log("pic pic pic",pic);
+    this.setState({
+      portfoImage:pic
+    })
+  }
+
   onSavePortfo = async () => {
     console.log("edit page",this.portfoKey);
     // console.log("hihihi");
-
+    console.log("picpic", this.portfoPic);
     if (this.portfoKey) {
       console.log("here?");
 
@@ -144,7 +175,8 @@ export class PortfolioEditScreen extends React.Component {
         this.state.portTitle,
         this.state.portDscrp,
         this.state.portURL,
-        this.props.route.params.userId
+        this.props.route.params.userId,
+        this.portfoKey
       );
     }
 
@@ -153,30 +185,6 @@ export class PortfolioEditScreen extends React.Component {
     });
   };
 
-  loadPic = async()=>{
-    let userId = this.props.route.params.userId;
-    this.portfoPic = await this.dataModel.loadPortfoPic(userId, this.portfoKey);
-    this.onPicUpdate(this.portfoPic);
-  }
-
-  subscribeToPortfoPic = async()=>{
-    let picData = this.props.route.params.picData;
-    console.log("hihihi");
-    console.log("pic data", this.props.route.params.picData);
-    let userId = this.props.route.params.userId;
-    let url = await this.dataModel.savePortfoImage(userId,this.portfoKey, picData);
-   
-    this.onPicUpdate(url);
-  }
-
-  onPicUpdate = (pic)=>{
-    console.log("currentuser",this.currentUser.imageURL);
-    console.log("this userPic",this.portfoPic);
-    console.log("pic pic pic",pic);
-    this.setState({
-      portfoImage:pic
-    })
-  }
 
   render() {
     return (

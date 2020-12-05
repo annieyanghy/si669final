@@ -75,8 +75,7 @@ export class ProfileScreen extends React.Component {
   }
 
   componentDidMount = () => {
-    // console.log("profile page",this.userInfo);
-    // console.log(this.props.route);
+
     this.focusUnsubscribe = this.props.navigation.addListener(
       "focus",
       this.onFocus
@@ -141,7 +140,7 @@ export class ProfileScreen extends React.Component {
     let userId = this.props.route.params.userId;
     
     let templist = await this.dataModel.loadPortfo(userId);
-    
+    this.userPortfo=[];
     let list = templist;
     console.log("idx idx",list);
     for (let idx of list ){

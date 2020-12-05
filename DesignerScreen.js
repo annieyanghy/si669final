@@ -18,8 +18,6 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Avatar, Accessory, Divider, Icon, SocialIcon, SearchBar } from "react-native-elements";
 import { Card, Title, Paragraph, Button, IconButton, Subheading, Caption, Headline, ToggleButton } from 'react-native-paper';
 
-import { UserContext } from './LoginScreen';
-
 import { getDataModel } from "./DataModel";
 import { designerStyles, colors } from "./Styles";
 
@@ -31,22 +29,10 @@ export class DesignersScreen extends React.Component {
         // console.log(this.props.navigation.getParam('currentUserInfo'));
         this.dataModel = getDataModel();
         this.currentUser = this.dataModel.fetchWhoIsUser();
-        
-        // this.currentUser = this.props.route.params.currentUser;
-        // this.chatMode = this.props.route.params.readChat;
     
-        // this.self = this.props.route.params.currentUser;
-        // this.other = this.props.route.params.otherUser;
-    
-     
-
-        //all users' profile information
-      
         this.allUserInfo=[];
         this.allUserInfo = this.dataModel.deliverAllUserProfile();
-        // console.log("hihihihihi",this.currentUser);
-        // console.log("getUser()",allUsers);
-        // console.log("all users info, this.alluserinfo",this.allUserInfo);
+       
         this.otherUsers = [];
         for (let user of this.allUserInfo) {
           if (user.userId !== this.currentUser.userId) {
@@ -62,10 +48,7 @@ export class DesignersScreen extends React.Component {
               other.profilePicURL = x.imageURL
             }
           }
-         
         };
-        console.log("what's all users",allUsers);
-        console.log("what's other user",this.otherUsers);
     
         this.state = {
           people: this.otherUsers,
