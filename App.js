@@ -21,6 +21,7 @@ import { PortfolioEditScreen } from './PortfolioEditScreen';
 import { DesignersScreen } from './DesignerScreen';
 import { DesignerProfileScreen } from './DesignerProfileScreen';
 import { ChatFriendScreen } from './ChatFriendScreen';
+import { ChatScreen } from './ChatScreen';
 
 
 
@@ -28,16 +29,7 @@ import { render } from 'react-dom';
 
 
 
-function ChatScreen () {
-  const userInfo = React.useContext(UserContext);
-  console.log("what's user info",userInfo)
-  return (
-    
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Chats!</Text>
-    </View>
-  );
-}
+
 
 const ProfileStack = createStackNavigator();
 
@@ -97,7 +89,12 @@ function ChatStackScreen() {
     <ChatStack.Navigator>
   
       <ChatStack.Screen name="Chat" component={ChatFriendScreen} />
-      <ChatStack.Screen name="ChatScreen" component={ChatScreen} />
+      <ChatStack.Screen 
+       screenOptions={{
+              tabBarVisible: false
+            }}
+
+      name="ChatScreen" component={ChatScreen} />
     </ChatStack.Navigator>
   );
 }
@@ -108,14 +105,24 @@ class Tabs extends React.Component {
  
   constructor(props) {
     super(props);
-    console.log("on tabs",this.props.route.params);
-    this.props.navigation.setParams(({currentUserInfo:this.props.route.params}));
-    console.log("on tab context",this.context);
-    console.log("on tabs post setting",this.props.route.params);
+    this.props.navigation.setParams(({currentUserInfo:this.props.route.params})); 
     this.dataModel = getDataModel();
 }
+
+      getTabBarVisibility = (route) => {
+        const routeName = route.state
+            ? route.state.routes[route.state.index].name
+            : '';
+
+        if (routeName === 'ChatScreen') {
+            return false;
+        }
+
+        return true;
+      };
+
   render(){
-    console.log("on tab context",this.context);
+   
   return (
     // <NavigationContainer>
     // <UserContext.Consumer>
@@ -143,7 +150,13 @@ class Tabs extends React.Component {
       >
         <Tab.Screen name="Profile Stack" component={ProfileStackScreen} />
         <Tab.Screen name="Designers" component={DesignerStackScreen} />
-        <Tab.Screen name="Chats" component={ChatStackScreen} />
+        <Tab.Screen name="Chats" component={ChatStackScreen} 
+              options={({ route }) => ({
+              tabBarVisible: this.getTabBarVisibility(route),
+    })}
+        
+        />
+        
         {/* <Tab.Screen name="Login" component={LoginScreen} 
             screenOptions={{
               tabBarVisible: false

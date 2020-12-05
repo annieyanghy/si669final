@@ -28,6 +28,8 @@ export class PortfolioEditScreen extends React.Component {
     this.userId = this.props.route.params.userId;
     this.userThisPortfo=[];
     this.portfoPic ='';
+    this.mode =  this.props.route.params.mode;
+   
     
     this.props.navigation.setOptions({
       headerRight: () => (
@@ -131,24 +133,32 @@ export class PortfolioEditScreen extends React.Component {
   loadPic = async()=>{
     let userId = this.props.route.params.userId;
     this.portfoPic = await this.dataModel.loadPortfoPic(userId, this.portfoKey);
+    console.log(".portfoPicURL",this.portfoPic);
+    // why I cannot return a whole data from loadPortfoPic
     this.onPicUpdate(this.portfoPic);
   }
 
   subscribeToPortfoPic = async()=>{
+    console.log(this.mode);
+    console.log("what's the matter pic",this.portfoPic);
     let picData = this.props.route.params.picData;
     this.portfoPicKey ="";
-    this.portfoKey;
+   
     let userId = this.props.route.params.userId;
-    this.portfoPicFile = await this.dataModel.savePortfoImage(userId,this.portfoKey, picData, this.portfoPicKey);
+    this.portfoPicFile = await this.dataModel.savePortfoImage(userId,this.portfoKey, picData, this.portfoPicKey, this.hi);
     let url = this.portfoPicFile.portfoPicURL;
+    this.portfoKey = this.portfoPicFile.picKey;
+    console.log("hey key key",this.portfoKey);
     this.onPicUpdate(url);
-    console.log("ni hao",this.portfoKey);
+
     //how to get this.portfoKey detected here after it's created by uploading picture?
   }
-
+  hi=()=>{
+    console.log("wowwowwow",this.portfoKey);
+  }
   onPicUpdate = (pic)=>{
-    console.log("currentuser",this.currentUser.imageURL);
-    console.log("this userPic",this.portfoPic);
+    console.log("ni hao",this.portfoKey);
+ 
     console.log("pic pic pic",pic);
     this.setState({
       portfoImage:pic
@@ -163,20 +173,23 @@ export class PortfolioEditScreen extends React.Component {
       console.log("here?");
 
       let userInfo = await this.dataModel.savePortfo(
+        this.mode,
         this.state.portTitle,
         this.state.portDscrp,
         this.state.portURL,
         this.props.route.params.userId,
-        this.portfoKey
+        this.portfoKey,
+       
       );
     } else {
       console.log("I am new");
       let userInfo = await this.dataModel.savePortfo(
+        this.mode,
         this.state.portTitle,
         this.state.portDscrp,
         this.state.portURL,
         this.props.route.params.userId,
-        this.portfoKey
+        
       );
     }
 

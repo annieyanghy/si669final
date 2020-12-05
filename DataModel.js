@@ -27,6 +27,7 @@ class DataModel {
     this.theCurrentUser ={};
    this.userInfoList =[];
    this.followingList=[];
+   this.chats = [];
 
 
     this.theCallback = undefined;
@@ -271,8 +272,7 @@ class DataModel {
   // --- save portfolio👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼
 
   loadPortfo = async (userId) => {
-    // load all of the users
-  // console.log('hi');
+
 
   let querySnap = await this.usersRef.doc(userId).collection("portfolio").orderBy('timestamp').get();
   let data;
@@ -295,34 +295,18 @@ class DataModel {
 };
 
 loadThisPortfo = async (userId, portfoKey) => {
-  // load all of the users
-// console.log('hi');
 
-let querySnap = await this.usersRef.doc(userId).collection("portfolio").doc(portfoKey).get();
-let data = querySnap.data();
-this.Portfo = [];
+  let querySnap = await this.usersRef.doc(userId).collection("portfolio").doc(portfoKey).get();
+  let data = querySnap.data();
+  this.Portfo = [];
 
-console.log("data data",data);
+  console.log("data data",data);
 
-// querySnap.forEach((qDocSnap) => {
-//   let key = qDocSnap.id;
-//   data = qDocSnap.data();
-//   data.key = key;
-
-//   //save to local array
-//   this.Portfo.push(data);
-//   // console.log("user info",data);
-//   console.log("user portfo key", this.Portfo[0].key);
-// });
-
-// console.log("portfo data", data);
-// console.log("in load portfo first line", this.Portfo);
-  //should return a list
-return data;
+  return data;
 };
 
 
-  savePortfo = async (title, dscrp, web, userId, userPortfoKey) => {
+  savePortfo = async (mode,title, dscrp, web, userId, userPortfoKey) => {
 
     //creating use model inside Firebase
     let userPortfo = {
@@ -331,15 +315,23 @@ return data;
       portfoURL: web,
       timestamp: Date.now(),
     };
-    console.log(userId);
+    console.log("the mode",mode);
     let userPortfoColRef = await this.usersRef.doc(userId).collection("portfolio");
     let userPortfoDocRef;
 
     if (userPortfoKey) {
-      //update the edited info
-      console.log("it's an old user updating the portfolio", userPortfoKey);
-      userPortfoDocRef = userPortfoColRef.doc(userPortfoKey);
-      await userPortfoDocRef.update(userPortfo);
+      if(mode == "edit"){
+        //update the edited info
+        console.log("it's an old user updating the portfolio", userPortfoKey);
+        userPortfoDocRef = userPortfoColRef.doc(userPortfoKey);
+        await userPortfoDocRef.update(userPortfo);
+      }else if(mode == "create"){
+        //add new info but have already uploaded the portfo image
+        console.log("it's a new user adding description", userPortfoKey);
+        userPortfoDocRef = userPortfoColRef.doc(userPortfoKey);
+        await userPortfoDocRef.set(userPortfo);
+      }
+     
     } else {
       // this is a new user!
 
@@ -414,13 +406,11 @@ return data;
       console.log("user portfoPic key",  this.PortfoPic[0].key);
     });
     console.log("portfo pic", data);
-    // console.log("in load profile first line", this.userPic);
-    let url = data.portfoPicURL;
-    console.log("portfo pic  url",  url);
-    return url;
+    let url = data.portfoPicURL
+    return  url;
   };
 
-  savePortfoImage = async (userId, portfoKey, portfoPicObject, portfoPicKey) => {
+  savePortfoImage = async (userId, portfoKey, portfoPicObject, portfoPicKey, update) => {
     if (this.theCallback) {
       this.theCallback(portfoPicObject);
     }
@@ -447,31 +437,28 @@ return data;
     if (portfoKey){
       //update portfolio picture
       console.log("I am updating");
-      portfoPicRef= await this.usersRef.doc(userId).collection('portfolio').doc(portfoKey).collection('portfoPic');
-      await profilePicRef.update(portfoPicDoc);
+      let docRef= await this.usersRef.doc(userId).collection('portfolio').doc(portfoKey).collection('portfoPic').doc(portfoPicKey);
+
+      await docRef.set(portfoPicDoc);
     }else{
        //add new portfolio picture
        console.log("I am adding, new portfolio");
        let docRef= await this.usersRef.doc(userId).collection('portfolio').doc();
        portfoKey = docRef.id;
+       
        portfoPicRef = await docRef.collection('portfoPic').add(portfoPicDoc);
        portfoPicKey = portfoPicRef.id;
+       portfoPicDoc.picKey = portfoKey;
        console.log(portfoPicRef.id);
        console.log(portfoPicKey); 
        console.log("new portfoKey",portfoKey);
 
-      //  let key = portfoPicKey.id;
-      //  portfoPicDoc.key = key;
     }
-    
 
-
-   
     console.log("hiiii");
-  
     console.log(portfoKey);
-    
     console.log("loaded");
+    update();
     return portfoPicDoc;
   };
 
@@ -532,6 +519,169 @@ unFollowOthers =async(currentUser, followedDesigner, followedId)=>{
   await unFollowingDocRef.delete();
   
 }
+
+
+// ---about chats
+
+loadChats = async () => {
+  let querySnap = await this.chatsRef.get();
+  querySnap.forEach(async qDocSnap => {
+    let data = qDocSnap.data();
+    let thisChat = {
+      key: qDocSnap.id,
+      participants: [],
+      messages: [],
+      // read: data.read
+    }
+    for (let userID of data.participants) {
+      let user = this.getUserForID(userID);
+      thisChat.participants.push(user);
+    }
+
+    let messageRef = qDocSnap.ref.collection("messages");
+    let messagesQSnap = await messageRef.get();
+    messagesQSnap.forEach(qDocSnap => {
+      let messageData = qDocSnap.data();
+      messageData.author = this.getUserForID(messageData.author);
+      messageData.key = qDocSnap.id;
+      thisChat.messages.push(messageData);
+    });
+    this.chats.push(thisChat);
+  
+  });
+}  
+
+subscribeToChat = (chat, notifyOnUpdate) => {
+  
+  this.chatSnapshotUnsub = this.chatsRef.doc(chat.key)
+    .collection('messages')
+    .orderBy('timestamp')
+    .onSnapshot((querySnap) => {
+      chat.messages = [];
+      querySnap.forEach((qDocSnap) => {
+        let messageObj = qDocSnap.data();
+        messageObj.key = qDocSnap.id;
+        messageObj.author = this.getUserForID(messageObj.author);
+        chat.messages.push(messageObj);
+        
+      
+      });
+      notifyOnUpdate(); // call back to the subscriber
+
+  });
+}
+
+unsubscribeFromChat = (chat) => {
+  // don't really need 'chat' but could need it in the future
+  if (this.chatSnapshotUnsub) {
+    this.chatSnapshotUnsub();
+  }
+}
+
+getOrCreateChat = async (user1, user2) => {
+  console.log("heeeeee",user1);
+  console.log("heeeeee",user2);
+
+  // look for this chat in the existing data model 'chats' array
+  // if it's here, we know it's already in Firebase
+  for (let chat of this.chats) {
+    // we need to use user keys to look for a match
+    // and we need to check for each user in each position
+    if (( chat.participants[0].key === user1.key && 
+          chat.participants[1].key === user2.key) ||
+        ( chat.participants[0].key === user2.key &&
+          chat.participants[1].key === user1.key)){
+      return chat; // if found, return it and we're done
+    }
+  }
+
+
+  // chat not found, gotta create it. Create an object for the FB doc
+  let newChatDocData = { participants: [user1.key, user2.key]};
+  
+  // add it to firebase
+  let newChatDocRef = await this.chatsRef.add(newChatDocData);
+  console.log("newChatDocData",newChatDocData);
+
+  // create a local chat object with full-fledged user objects (not just keys)
+  let newChat = {
+    participants: [user1, user2],
+    key: newChatDocRef.id, // use the Firebase ID
+    messages: [],
+   
+  }
+
+
+  // add it to the data model's chats, then return it
+  this.chats.push(newChat);
+
+  return newChat;
+}
+
+getChatForID = (id) => {
+  for (let chat of this.chats) {
+    if (chat.key === id) {
+      return chat;
+    }
+  }
+  // the chat was not found
+  // should throw an error prob'ly
+  // return undefined
+  // [[almost accidental haiku]]
+}
+
+addChatMessage = async (chatID, message) => { // doesn't need to be async?
+
+  let messagesRef = this.chatsRef.doc(chatID).collection('messages');
+
+  let fbMessageObject = {
+    type: 'text',
+    text: message.text,
+    timestamp: message.timestamp,
+    author: message.author.key,
+    other:message.other.key,
+    read:false
+
+  }
+
+  messagesRef.add(fbMessageObject); // onSnapshot will update local model
+}
+
+addChatImage = async (chat, author, imageObject) => {
+  if (this.theCallback) {
+    this.theCallback(imageObject);
+}
+  console.log('... and here we would add the image ...');
+  console.log(imageObject);
+  // let messageRef = this.chatsRef.doc(chat.key).collection('messages');
+
+  let newImageRef = await this.chatsRef.doc(chat.key).collection('messages');
+
+  let fileName = ''+Date.now();
+  let imageRef = this.storageRef.child(fileName);
+
+  let response = await fetch(imageObject.uri);
+  let imageBlob = await response.blob();
+
+  await imageRef.put(imageBlob);
+
+  //update current image to Firestore
+  let downloadURL = await imageRef.getDownloadURL();
+  imageObject.uri = downloadURL;
+
+  let imageDoc = {
+    imageObject,
+    imageURL: downloadURL,
+    type: 'image',
+    author: author.key,
+    timestamp: Date.now(),
+    read: false
+  }
+
+  await newImageRef.add(imageDoc);
+  
+}
+
 }
 
 

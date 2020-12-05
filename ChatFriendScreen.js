@@ -27,7 +27,7 @@ export class ChatFriendScreen extends React.Component {
      
     constructor(props) {
         super(props);
-        // console.log(this.props.navigation.getParam('currentUserInfo'));
+
         this.dataModel = getDataModel();
         this.currentUser = this.dataModel.fetchWhoIsUser();
     
@@ -37,10 +37,10 @@ export class ChatFriendScreen extends React.Component {
         this.otherUsers = [];
         for (let user of this.allUserInfo) {
           if (user.userId !== this.currentUser.userId) {
-            console.log(user.key);
             this.otherUsers.push(user);
           }
         }
+        console.log("otherusers",this.otherUsers);
         //all users' login info
         let allUsers = this.dataModel.getUsers();
         for (let x of allUsers){
@@ -52,14 +52,12 @@ export class ChatFriendScreen extends React.Component {
          
         };
 
-      
-    
         this.state = {
           people: [],
           search:'',
-          toggleView:'right',
-          styleView:chatFriendStyles.personCard,
-          numofCol:2
+          toggleView:'left',
+          styleView:chatFriendStyles.personRow,
+          numofCol:1
         }
       }
     
@@ -141,15 +139,6 @@ export class ChatFriendScreen extends React.Component {
         })
       }
 
-      goChat=()=>{
-        this.props.navigation.navigate("ChatScreen", {
-          currentUser: this.currentUser,
-          // userId: this.userId,
-          // portfoKey: item.key,
-          // portfoContent: item
-        })
-      }
-
 
     
       render() {
@@ -185,7 +174,7 @@ export class ChatFriendScreen extends React.Component {
                         />
                     </ToggleButton.Row>
                   <SearchBar
-                    placeholder="Type Here..."
+                    placeholder="Search..."
                     onChangeText={this.updateSearch}
                     value={this.state.search}
                     round={true}
@@ -237,7 +226,13 @@ export class ChatFriendScreen extends React.Component {
                           color='white'
                           size={20}
                           style={{width:36, height:36, margin:10, backgroundColor:colors.primary, borderRadius:50}}
-                          onPress={()=>this.goChat()}
+                          onPress={()=> this.props.navigation.navigate("ChatScreen", {
+                                          currentUser: this.currentUser,
+                                          otherUser:item,
+                                          // userId: this.userId,
+                                          // portfoKey: item.key,
+                                          // portfoContent: item
+                                        })}
                       />
 
                         </View>

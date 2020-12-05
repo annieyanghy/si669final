@@ -123,7 +123,7 @@ export class ProfileScreen extends React.Component {
 
   subscribeToUserPic = async()=>{
     let picData = this.props.route.params.picData;
-    console.log("pic data", this.props.route.params.picData);
+
     let userId = this.props.route.params.userId;
     let url = await this.dataModel.saveProfileImage(userId, picData);
    
@@ -141,12 +141,12 @@ export class ProfileScreen extends React.Component {
     
     let templist = await this.dataModel.loadPortfo(userId);
     this.userPortfo=[];
-    let list = templist;
-    console.log("idx idx",list);
-    for (let idx of list ){
-      console.log("which one ?",idx);
+    this.list = templist;
+    console.log("idx idx",this.list);
+    for (let idx of this.list ){
+      console.log("which one idx?",idx);
       this.portfoPic = await this.dataModel.loadPortfoPic(userId,idx.key);
-      console.log("portfo pic which one ?",idx);
+ 
       idx.portfoPicURL =this.portfoPic;
       this.userPortfo.push(idx);
       console.log("portfo pic which one ?",idx);
@@ -166,26 +166,9 @@ export class ProfileScreen extends React.Component {
     });
   };
   
-  // loadPortfoPic = async()=>{
-  //   let userId = this.props.route.params.userId;
-  //   console.log("hey yo!",this.props.route.params)
-  //   console.log("hey yo!",this.portfoKey)
-    
-  //   this.portfoPic = await this.dataModel.loadPortfoPic(userId, this.portfoKey);
-  //   this.onPortfoPicUpdate(this.portfoPic);
-  // }
-
-  // subscribeToPortfoPic = async()=>{
-  //   let picData = this.props.route.params.picData;
-  //   console.log("hihihi");
-  //   console.log("pic data", this.props.route.params.picData);
-  //   let userId = this.props.route.params.userId;
-  //   let url = await this.dataModel.savePortfoImage(userId,this.portfoKey, picData);
-  //   this.onPicUpdate(url);
-  // }
 
   onPortfoPicUpdate = (pic)=>{
-    console.log("portfolio piccccc",pic);
+  
     this.setState({
       portfoImage:pic
     })
@@ -351,7 +334,8 @@ export class ProfileScreen extends React.Component {
                                 currentUser: this.currentUser,
                                 userId: this.userId,
                                 portfoKey: item.key,
-                                portfoContent: item
+                                portfoContent: item,
+                                mode:'edit'
                               })}
                         ></Button>
 
@@ -380,6 +364,7 @@ export class ProfileScreen extends React.Component {
                   this.props.navigation.navigate("Edit Portfolio", {
                         currentUser: this.currentUser,
                         userId: this.userId,
+                        mode:'create'
                       })}
             >Add Portfolio</Button>
       </View>

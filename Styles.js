@@ -478,6 +478,71 @@ export const profileStyles = StyleSheet.create({
                         }
       });
 
+      export const chatStyles = StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: '#fff',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+        },
+          messageListContainer: {
+            flex: 0.9,
+            justifyContent: 'center',
+            alignItems: 'stretch',
+            width: '100%',
+            alignSelf: 'center',
+            paddingTop: '3%'
+          },
+            chatTextSelfContainer: {
+              alignSelf: 'flex-end',
+              padding: 5,
+              margin: 5, 
+              marginRight: 20,
+              marginLeft: 40,
+              backgroundColor: 'lightblue',
+              borderRadius: 6
+            },
+              chatTextSelf: {
+                fontSize: 18,
+                textAlign: 'right',
+              },
+            chatTextOtherContainer: {
+              alignSelf: 'flex-start',
+              padding: 5,
+              margin: 5, 
+              marginLeft: 20,
+              marginRight: 40,
+              backgroundColor: 'lightgray',
+              borderRadius: 6
+            },
+              chatTextOther: {
+                fontSize: 18,
+                textAlign: 'left',
+              },
+          inputContainer: {
+            flex: 0.1,
+            width: '100%',
+            justifyContent: 'flex-start',
+            alignItems: 'stretch'
+          },
+            inputRow: {
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center'
+            },  
+            inputBox: {
+              flex: 0.8,
+              borderWidth: 1,
+              borderColor: colors.primaryDark,
+              borderRadius: 6,
+              alignSelf: 'center',
+              fontSize: 18,
+              height: 40,
+              padding: 5,
+              margin: 5
+            }
+      });
+
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
