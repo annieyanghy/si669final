@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextInput, Text, View, 
-    Image, TouchableOpacity, KeyboardAvoidingView, Alert, Button, FlatList} 
+    Image, TouchableOpacity, KeyboardAvoidingView, Alert, Button, FlatList, Switch} 
     from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -8,6 +8,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getDataModel } from './DataModel';
 import { profileStyles, colors } from './Styles';
 import { EditInfo} from './Component';
+import { ScrollView } from 'react-native-gesture-handler';
+import { Chip } from 'react-native-paper';
 
 
 
@@ -42,6 +44,7 @@ export class ProfileEditScreen extends React.Component {
         infoCompany:'',
         infoWeb:'',
         infoLinkedin:'',
+        isEnabled:false,
     }
 
     
@@ -68,7 +71,8 @@ onInfoUpdate = ()=>{
         infoSchool: this.userInfo.userSchool,
         infoCompany:this.userInfo.userCompany,
         infoWeb: this.userInfo.userWeb,
-        infoLinkedin: this.userInfo.userLinkedin
+        infoLinkedin: this.userInfo.userLinkedin,
+        isEnabled:this.userInfo.isMentor,
     })
 
 }
@@ -88,6 +92,7 @@ onSaveInfo = async () =>{
             this.state.infoCompany, 
             this.state.infoWeb,
             this.state.infoLinkedin,
+            this.state.isEnabled,
             this.props.route.params.userId,
             this.userInfo.infoKey,
             );
@@ -100,6 +105,7 @@ onSaveInfo = async () =>{
             this.state.infoCompany, 
             this.state.infoWeb,
             this.state.infoLinkedin,
+            this.state.isEnabled,
             this.props.route.params.userId,
             
             );
@@ -111,45 +117,23 @@ onSaveInfo = async () =>{
     
 }
 
-// handleValidation = (unique) => {
-//     let item = unique.nativeEvent.text;
+toggleSwitch=(value)=>{
 
-
-
-//     this.setState({
-//         infoName: item,
-
-//         //need to save the individual textinput into this.state
-//     });
-//     console.log("what's infoname",this.state.infoName);
-// };
-// tellValue = (value) =>{
-
-//     if (value.label === 'Name'){
-//         console.log(value.label);
-//         return this.state.infoName
-//     } else if (value.label === 'School'){
-//         console.log(value.label);
-//         return this.state.infoSchool
-//     }
-//     // set
-
-// }
-// handleChangeText = ( text) =>{
-//     console.log('hi');
-//     let { textInput } = this.state;
-//     textInput[index] = text;
-//     console.log(text);
-//     this.setState({textInput,});
-    
-
-// }
-
+    this.setState({isEnabled:value})
+}
 
 
 render(){
 return (
-    <View style={profileStyles.container}>
+    <KeyboardAvoidingView
+        style={profileStyles.container}
+        behavior={"padding"}
+        keyboardVerticalOffset={2}
+        enabled={true}
+        scrollEnabled={true}
+    >
+        <ScrollView>
+    
         <EditInfo icon={this.state.profileInfo[0].iconName} 
                                 label={this.state.profileInfo[0].label} 
                                 info={this.state.infoName}  
@@ -202,6 +186,16 @@ return (
                             onChange = {(text) =>{this.setState({infoJobTitle:text.nativeEvent.text})}}
                             value = {this.state.infoJobTitle}
         />
-    </View>
+        <Text>I want to be a Mentor</Text>
+       <Switch 
+        trackColor={{ false: "#767577", true: "#81b0ff" }}
+            thumbColor={this.state.isEnabled ? "#f5dd4b" : "#f4f3f4"}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={this.toggleSwitch}
+            value={this.state.isEnabled}
+       ></Switch>
+   
+    </ScrollView>
+    </KeyboardAvoidingView>
 );
 }}

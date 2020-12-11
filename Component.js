@@ -25,8 +25,12 @@ export class EditInfo extends React.Component {
                                 editable={this.props.editable}
                                 autoCapitalize = 'none'
                                 value = {this.props.infoInputValue}
+                                defaultValue={this.props.defaultValue}
                                 onChange = {this.props.onChange}
                                 textContentType = {this.props.textContentType}
+                                multiline={true}
+                                numberOfLines={5}
+                                onFocus={this.props.onFocus}
 
                     >{this.props.info}</TextInput>
                 </View>

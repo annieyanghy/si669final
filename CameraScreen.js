@@ -45,7 +45,11 @@ export class CameraScreen extends React.Component {
     handleTakePicture = async () => {
         let picData = await this.camera.takePictureAsync();
         // this.dataModel.saveProfileImage(this.userId, picData);
-        this.props.navigation.navigate('Profile',{picData:picData});
+        if (this.props.route.params.mode == 'portfolio'){
+            this.props.navigation.navigate('Edit Portfolio',{picData:picData});
+        }else{
+            this.props.navigation.navigate('Profile',{picData:picData});
+        }
     }
 
     setupCamera = async (cameraRef) => { 

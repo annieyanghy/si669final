@@ -65,7 +65,7 @@ onCreateAccount = async () => {
     this.state.displayNameInput
     );
     this.props.navigation.navigate("Tab", {
-        screen:"Profile Stack",
+        screen:"Profiles",
         params:{
             screen:"Profile",
             params:{
@@ -95,7 +95,7 @@ onLogin = () => {
             userId: user.key
         });
         this.props.navigation.navigate("Tab", {
-            screen:"Profile Stack",
+            screen:"Profiles",
             params:{
                 screen:"Profile",
                 params:{

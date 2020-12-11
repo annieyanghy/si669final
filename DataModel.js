@@ -15,7 +15,7 @@ class DataModel {
       firebase.initializeApp(firebaseConfig);
     }
     this.usersRef = firebase.firestore().collection("users");
-    // this.chatsRef = firebase.firestore().collection('chats');
+    this.chatsRef = firebase.firestore().collection('chats');
     // this.currentImageRef = firebase.firestore().doc('chats/images');
     this.storageRef = firebase.storage().ref(); // for image
     this.users = [];
@@ -28,7 +28,7 @@ class DataModel {
    this.userInfoList =[];
    this.followingList=[];
    this.chats = [];
-
+   this.followerList=[];
 
     this.theCallback = undefined;
     this.asyncInit();
@@ -39,7 +39,7 @@ class DataModel {
     this.loadProfile();
     this.getAllUserInfo();
     
-    // this.loadChats();
+    this.loadChats();
     //this.subscribeToChats();
 
   };
@@ -132,13 +132,26 @@ class DataModel {
       })      
   }
     console.log("what's all of the users",this.userInfoList);
-    return this.userInfoList
+    // return this.userInfoList
   }
  
 
   deliverAllUserProfile = ()=>{
+    console.log("deliver",this.userInfoList);
     return this.userInfoList
   }
+
+  // getUserForUserData =(id)=>{
+  //   this.x = this.deliverAllUserProfile();
+  //   console.log("this.userInfoList!",this.x);
+  //   for (let user of this.userInfoList){
+     
+  //     if (user.userId === id){
+        
+  //       return user;
+  //     }  
+  //   }
+  // };
 
   loadProfile = async (userId) => {
       // load all of the users
@@ -166,13 +179,15 @@ class DataModel {
 
   getUserForInfo =(id)=>{
     for (let user of this.Info){
-      if (id == user.userInfoKey)
-      console.log("hello ni hao ma",user);
-      return user
+      if (id === user.userInfoKey){
+        return user
+      }
     }
-  }
+  };
 
-  saveProfile = async (name, job, school, company, web, linkedin, userId, userInfoKey) => {
+  
+
+  saveProfile = async (name, job, school, company, web, linkedin, mentor, userId, userInfoKey) => {
     console.log("hihihi");
 
     //creating use model inside Firebase
@@ -183,6 +198,7 @@ class DataModel {
       userCompany: company,
       userWeb: web,
       userLinkedin: linkedin,
+      isMentor: mentor,
       timestamp: Date.now(),
     };
     console.log(userId);
@@ -272,27 +288,87 @@ class DataModel {
   // --- save portfolio👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼👩🏻‍🖼
 
   loadPortfo = async (userId) => {
+    
+    this.Portfo = [];
+    let data;
 
+    let querySnap = await this.usersRef.doc(userId).collection("portfolio").orderBy('timestamp').get();
+    
+    querySnap.forEach((qDocSnap) => {
+      let key = qDocSnap.id;
+      data = qDocSnap.data();
+      data.key = key;
 
-  let querySnap = await this.usersRef.doc(userId).collection("portfolio").orderBy('timestamp').get();
-  let data;
-  this.Portfo = [];
-  querySnap.forEach((qDocSnap) => {
-    let key = qDocSnap.id;
-    data = qDocSnap.data();
-    data.key = key;
+      //save to local array
+      this.Portfo.push(data);
+      // console.log("user info",data);
+      console.log("user portfo key", this.Portfo[0].key);
+    });
 
-    //save to local array
-    this.Portfo.push(data);
-    // console.log("user info",data);
-    console.log("user portfo key", this.Portfo[0].key);
-  });
-
-  console.log("portfo data", data);
-  console.log("in load portfo first line", this.Portfo);
-    //should return a list
-  return this.Portfo;
+    // let temp = await this.usersRef.doc(userId).collection("portfolio").orderBy('timestamp').onSnapshot((query)=>{
+    //   this.Portfo = [];
+    //   let data;
+    //   query.forEach((qDocSnap)=>{
+    //     let key = qDocSnap.id;
+    //     data = qDocSnap.data();
+    //     data.key= key;
+    //     this.Portfo.push(data);
+    //     console.log("portfo data", data);
+    //     console.log("in load portfo first line", this.Portfo);
+    //   })
+      
+    // })
+    return this.Portfo;
+      
+  
 };
+
+onDeletePortfo = (item, userId, update) => {
+  let deletedItem = item.portfoTitle;
+  console.log("list screen on delete", deletedItem);
+  console.log(item);
+  Alert.alert(
+    "Delete item?",
+    'Are you sure you want to delete "' + deletedItem + '"?',
+    [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+      },
+      {
+        text: "Delete",
+        onPress: () => {
+          this.deletePortfoItem(item.key, userId,this.loadPortfo);
+        },
+      },
+    ],
+    { cancelable: true }
+  );
+  update();
+};
+
+deletePortfoItem = async (itemKey, userId, update) => {
+  console.log(itemKey);
+  console.log(userId)
+  let deleteRef = this.usersRef.doc(userId).collection("portfolio").doc(itemKey);
+
+  await deleteRef.delete();
+
+  let foundIndex = -1;
+  for (let idx in this.Portfo) {
+    if (this.Portfo[idx].key === itemKey) {
+      foundIndex = idx;
+      break;
+    }
+  }
+  if (foundIndex !== -1) {
+    // silently fail if item not found
+    this.Portfo.splice(foundIndex, 1); // remove one element
+  }
+  console.log(this.Portfo);
+  update();
+};
+
 
 loadThisPortfo = async (userId, portfoKey) => {
 
@@ -344,50 +420,7 @@ loadThisPortfo = async (userId, portfoKey) => {
     return userPortfo;
   };
 
-  onDeletePortfo = (item, userId) => {
-    let deletedItem = item.portfoTitle;
-    console.log("list screen on delete", deletedItem);
-    console.log(item);
-    Alert.alert(
-      "Delete item?",
-      'Are you sure you want to delete "' + deletedItem + '"?',
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-        },
-        {
-          text: "Delete",
-          onPress: () => {
-            this.deletePortfoItem(item.key, userId);
-          },
-        },
-      ],
-      { cancelable: true }
-    );
-  };
-
-  deletePortfoItem = async (itemKey, userId) => {
-    console.log(itemKey);
-    console.log(userId)
-    let deleteRef = this.usersRef.doc(userId).collection("portfolio").doc(itemKey);
-
-    await deleteRef.delete();
-
-    let foundIndex = -1;
-    for (let idx in this.Portfo) {
-      if (this.Portfo[idx].key === itemKey) {
-        foundIndex = idx;
-        break;
-      }
-    }
-    if (foundIndex !== -1) {
-      // silently fail if item not found
-      this.Portfo.splice(foundIndex, 1); // remove one element
-    }
-    console.log(this.Portfo);
-  };
-
+  
   loadPortfoPic = async (userId, portfoKey) => {
     // console.log('hi');
 
@@ -409,6 +442,11 @@ loadThisPortfo = async (userId, portfoKey) => {
     let url = data.portfoPicURL
     return  url;
   };
+
+  getPortfoPicData=()=>{
+    return this.PortfoPic
+  }
+
 
   savePortfoImage = async (userId, portfoKey, portfoPicObject, portfoPicKey, update) => {
     if (this.theCallback) {
@@ -435,29 +473,36 @@ loadThisPortfo = async (userId, portfoKey) => {
 
     let portfoPicRef;
     if (portfoKey){
-      //update portfolio picture
-      console.log("I am updating");
-      let docRef= await this.usersRef.doc(userId).collection('portfolio').doc(portfoKey).collection('portfoPic').doc(portfoPicKey);
+      if(portfoPicKey){
+        console.log("what's the portfoPicKey",portfoPicKey);
+        //update portfolio picture
+        console.log("I am updating");
+        let docRef= await this.usersRef.doc(userId).collection('portfolio').doc(portfoKey).collection('portfoPic').doc(portfoPicKey);
 
-      await docRef.set(portfoPicDoc);
+        await docRef.update(portfoPicDoc);
+      }else{
+        //only had description, but upload pic for the first time
+        console.log("I am add photo to the portfolio");
+        let docRef= await this.usersRef.doc(userId).collection('portfolio').doc(portfoKey).collection('portfoPic');
+
+        await docRef.add(portfoPicDoc);
+
+      }
+     
     }else{
        //add new portfolio picture
        console.log("I am adding, new portfolio");
        let docRef= await this.usersRef.doc(userId).collection('portfolio').doc();
        portfoKey = docRef.id;
-       
        portfoPicRef = await docRef.collection('portfoPic').add(portfoPicDoc);
        portfoPicKey = portfoPicRef.id;
-       portfoPicDoc.picKey = portfoKey;
+       portfoPicDoc.portfoKey = portfoKey;
+       portfoPicDoc.portfoPicKey = portfoPicKey;
        console.log(portfoPicRef.id);
        console.log(portfoPicKey); 
-       console.log("new portfoKey",portfoKey);
-
     }
-
-    console.log("hiiii");
     console.log(portfoKey);
-    console.log("loaded");
+
     update();
     return portfoPicDoc;
   };
@@ -496,6 +541,45 @@ loadThisPortfo = async (userId, portfoKey) => {
     return this.followingList
   }
 
+
+    checkChatFromFollower = async(id)=>{
+     
+      let querySnap = await this.chatsRef.get();
+      this.followerList=[];
+      let susList=[];
+      querySnap.forEach(qDocSnap=>{
+        let data = qDocSnap.data();
+        console.log("meee",data);
+        for (let me of data.participants){
+          if (me === id){
+           susList.push(data.participants);
+          }
+        };
+        console.log("follower hi ben!!",susList);
+        for (let team of susList){
+          for (let follower of team){
+            console.log("follower id", follower);
+            this.followerList=[];
+            for (let following of this.followingList){
+              if (follower !==following.followingDocKey && follower!== id){
+                
+                this.followerList.push(follower);
+                console.log("dataModel follower",this.followerList)
+              }
+              return this.followList;
+            }
+
+          }
+        }
+     
+      })
+     
+    }
+    returnFollowerList=()=>{
+      console.log("followerlist",this.followerList);
+      return this.followerList
+    }
+
   //--following other designers
   followOthers=async(currentUser, followedDesigner, followedId)=>{
     console.log(currentUser);
@@ -507,26 +591,28 @@ loadThisPortfo = async (userId, portfoKey) => {
     console.log(key);
   }
 
-//--unfollow other designers
-unFollowOthers =async(currentUser, followedDesigner, followedId)=>{
-  console.log(currentUser);
-  console.log(followedDesigner);
-  let unfollowedUser = this.followingList.find(designer =>designer.docUserId == followedId);
-  console.log("hey hey",unfollowedUser);
-  // followedDesigner.userId = followedId;
-  let unFollowingCol = await this.usersRef.doc(currentUser.userId).collection('following');
-  let unFollowingDocRef = await unFollowingCol.doc(unfollowedUser.followingDocKey);
-  await unFollowingDocRef.delete();
-  
-}
+  //--unfollow other designers
+  unFollowOthers =async(currentUser, followedDesigner, followedId)=>{
+    console.log(currentUser);
+    console.log(followedDesigner);
+    let unfollowedUser = this.followingList.find(designer =>designer.docUserId == followedId);
+    console.log("hey hey",unfollowedUser);
+    // followedDesigner.userId = followedId;
+    let unFollowingCol = await this.usersRef.doc(currentUser.userId).collection('following');
+    let unFollowingDocRef = await unFollowingCol.doc(unfollowedUser.followingDocKey);
+    await unFollowingDocRef.delete();
+    
+  }
 
 
-// ---about chats
+  // ---about chats
 
 loadChats = async () => {
+
   let querySnap = await this.chatsRef.get();
   querySnap.forEach(async qDocSnap => {
     let data = qDocSnap.data();
+    console.log("load chats data",data);
     let thisChat = {
       key: qDocSnap.id,
       participants: [],
@@ -534,19 +620,24 @@ loadChats = async () => {
       // read: data.read
     }
     for (let userID of data.participants) {
+      console.log("what's user", userID);
       let user = this.getUserForID(userID);
+      console.log("what's user", user);
       thisChat.participants.push(user);
+      console.log("what's thisChat", thisChat);
     }
 
     let messageRef = qDocSnap.ref.collection("messages");
     let messagesQSnap = await messageRef.get();
-    messagesQSnap.forEach(qDocSnap => {
+      messagesQSnap.forEach(qDocSnap => {
       let messageData = qDocSnap.data();
+      console.log("data data",messageData);
       messageData.author = this.getUserForID(messageData.author);
       messageData.key = qDocSnap.id;
       thisChat.messages.push(messageData);
     });
     this.chats.push(thisChat);
+    console.log("load chats",this.chats);
   
   });
 }  
@@ -579,25 +670,24 @@ unsubscribeFromChat = (chat) => {
 }
 
 getOrCreateChat = async (user1, user2) => {
-  console.log("heeeeee",user1);
-  console.log("heeeeee",user2);
+  console.log("heeeeee",this.chats);
 
   // look for this chat in the existing data model 'chats' array
   // if it's here, we know it's already in Firebase
   for (let chat of this.chats) {
     // we need to use user keys to look for a match
     // and we need to check for each user in each position
-    if (( chat.participants[0].key === user1.key && 
-          chat.participants[1].key === user2.key) ||
-        ( chat.participants[0].key === user2.key &&
-          chat.participants[1].key === user1.key)){
+    if (( chat.participants[0].key === user1.userId && 
+          chat.participants[1].key === user2.userId) ||
+        ( chat.participants[0].key === user2.userId &&
+          chat.participants[1].key === user1.userId)){
       return chat; // if found, return it and we're done
     }
   }
 
 
   // chat not found, gotta create it. Create an object for the FB doc
-  let newChatDocData = { participants: [user1.key, user2.key]};
+  let newChatDocData = { participants: [user1.userId, user2.userId]};
   
   // add it to firebase
   let newChatDocRef = await this.chatsRef.add(newChatDocData);
@@ -638,8 +728,8 @@ addChatMessage = async (chatID, message) => { // doesn't need to be async?
     type: 'text',
     text: message.text,
     timestamp: message.timestamp,
-    author: message.author.key,
-    other:message.other.key,
+    author: message.author.userId,
+    other:message.other.userId,
     read:false
 
   }
@@ -679,6 +769,34 @@ addChatImage = async (chat, author, imageObject) => {
   }
 
   await newImageRef.add(imageDoc);
+  
+}
+
+addChatPortfolio = async (portfo, author, chat) => {
+  if (this.theCallback) {
+    this.theCallback(portfo);
+}
+  console.log('... and here we would add the image ...');
+  console.log(portfo);
+  console.log(author);
+  let portfoRef = await this.chatsRef.doc(chat.key).collection('messages');
+
+  //update current image to Firestore
+ 
+
+  let portfoDoc = {
+   
+    imageURL: portfo.portfoPicURL,
+    portfoTitle:portfo.portfoTitle,
+    portfoDscrp: portfo.portfoDscrp,
+    portfoURL:portfo.portfoURL,
+    type: 'portfolio',
+    author:  author.userId,
+    timestamp: Date.now(),
+    read: false
+  }
+
+  await portfoRef.add(portfoDoc);
   
 }
 

@@ -17,7 +17,7 @@ import { Card, Title, Paragraph, Button, IconButton, Subheading, Caption, Headli
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { getDataModel } from "./DataModel";
-import { profileStyles, colors } from "./Styles";
+import { portfoEditStyles, colors } from "./Styles";
 import { EditInfo } from "./Component";
 
 export class PortfolioEditScreen extends React.Component {
@@ -28,6 +28,7 @@ export class PortfolioEditScreen extends React.Component {
     this.userId = this.props.route.params.userId;
     this.userThisPortfo=[];
     this.portfoPic ='';
+    this.portfoPicKey="";
     this.mode =  this.props.route.params.mode;
    
     
@@ -82,7 +83,8 @@ export class PortfolioEditScreen extends React.Component {
       portTitle: initTitle,
       portDscrp: initDscrp,
       portURL: initURL,
-      portfoImage:''
+      portfoImage:'',
+      isFocused:false
     };
   }
 
@@ -134,21 +136,28 @@ export class PortfolioEditScreen extends React.Component {
     let userId = this.props.route.params.userId;
     this.portfoPic = await this.dataModel.loadPortfoPic(userId, this.portfoKey);
     console.log(".portfoPicURL",this.portfoPic);
+    // let url = this.portfoPic.portfoPicUR;
     // why I cannot return a whole data from loadPortfoPic
-    this.onPicUpdate(this.portfoPic);
+    let doc = this.dataModel.getPortfoPicData();
+    this.portfoPicKey = doc[0].key;
+    console.log("docdoc", this.portfoPicKey);
+    this.onPicUpdate( this.portfoPic);
+    this.subscribeToPortfoPic();
   }
 
   subscribeToPortfoPic = async()=>{
     console.log(this.mode);
     console.log("what's the matter pic",this.portfoPic);
+    console.log("hey doc doc pic key",this.portfoPicKey);
     let picData = this.props.route.params.picData;
-    this.portfoPicKey ="";
+    
    
     let userId = this.props.route.params.userId;
     this.portfoPicFile = await this.dataModel.savePortfoImage(userId,this.portfoKey, picData, this.portfoPicKey, this.hi);
     let url = this.portfoPicFile.portfoPicURL;
-    this.portfoKey = this.portfoPicFile.picKey;
-    console.log("hey key key",this.portfoKey);
+    this.portfoKey = this.portfoPicFile.portfoKey;
+    this.portfoPicKey = this.portfoPicFile.portfoPicKey;
+    // console.log("hey key key",this.portfoPicKey);
     this.onPicUpdate(url);
 
     //how to get this.portfoKey detected here after it's created by uploading picture?
@@ -158,6 +167,7 @@ export class PortfolioEditScreen extends React.Component {
   }
   onPicUpdate = (pic)=>{
     console.log("ni hao",this.portfoKey);
+    console.log("ni hao ah",this.portfoPicKey);
  
     console.log("pic pic pic",pic);
     this.setState({
@@ -198,20 +208,30 @@ export class PortfolioEditScreen extends React.Component {
     });
   };
 
+  // textFocus=()=>{
+  //   this.setState({isFocused:true})
+  // }
+
 
   render() {
     return (
-      <View style={profileStyles.container}>
-        <View style={profileStyles.portfoImageContainer}>
+      <KeyboardAvoidingView 
+        style={portfoEditStyles.container}
+        behavior={"position"}
+        keyboardVerticalOffset={0}
+        enabled={true}
+        scrollEnabled={true}
+      >
+         <ScrollView>
+      {/* <View style={profileStyles.container}> */}
+        <View style={portfoEditStyles.portfoImageContainer}>
           <Image
-            style={profileStyles.portfoImage}
+            style={portfoEditStyles.portfoImage}
             // defaultSource={{<ActivityIndicator/>}}
             source={{uri:this.state.portfoImage}}
-
-            // {{uri:this.state.portfoImage}}
           />
         </View>
-        <View style={profileStyles.actionContainer}>
+        <View style={portfoEditStyles.actionContainer}>
                     <Button icon="pencil" mode="text" 
                         color={colors.primary}
                         style={{height:32}}
@@ -276,12 +296,16 @@ export class PortfolioEditScreen extends React.Component {
           placeholder={this.state.profileInfo[2].placeholder}
           editable={this.state.editable}
           textContentType='URL'
+        
           onChange={(text) => {
-            this.setState({ portURL: text.nativeEvent.text });
+            this.setState({ portURL: +text.nativeEvent.text });
           }}
           value={this.state.portURL}
+          // onFocus={()=>this.textFocus()}
         />
-      </View>
+      {/* </View> */}
+      </ScrollView>
+       </KeyboardAvoidingView >
     );
   }
 }

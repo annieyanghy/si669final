@@ -16,7 +16,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Avatar, Accessory, Divider, Icon, SocialIcon, SearchBar } from "react-native-elements";
-import { Card, Title, Paragraph, Button, IconButton, Subheading, Caption, Headline, ToggleButton } from 'react-native-paper';
+import { Card, Title, Paragraph, Button, IconButton, Subheading, Caption, Headline, ToggleButton, Chip } from 'react-native-paper';
 
 import { getDataModel } from "./DataModel";
 import { designerStyles, colors } from "./Styles";
@@ -29,7 +29,7 @@ export class DesignersScreen extends React.Component {
         // console.log(this.props.navigation.getParam('currentUserInfo'));
         this.dataModel = getDataModel();
         this.currentUser = this.dataModel.fetchWhoIsUser();
-    
+        this.friendList=[];
         this.allUserInfo=[];
         this.allUserInfo = this.dataModel.deliverAllUserProfile();
        
@@ -55,7 +55,10 @@ export class DesignersScreen extends React.Component {
           search:'',
           toggleView:'right',
           styleView:designerStyles.personCard,
-          numofCol:2
+          numofCol:2,
+          chipMentor:false,
+          chipFollowing:false,
+          followingList:[]
         }
       }
     
@@ -69,7 +72,7 @@ export class DesignersScreen extends React.Component {
       }
     
       onFocus = () =>{
-       
+       this.checkFollowing();
       }
 
       updateSearch = (search) => {
@@ -85,19 +88,72 @@ export class DesignersScreen extends React.Component {
         }
        
         console.log(this.filteredPople)
-        this.setState({ 
-          search: search,
-          people: query
-         });
-      };
-      handleCancel=()=>{
-        console.log("hihihi");
        
+      };
+
+      checkFollowing = async ()=>{
+        let templist =  await this.dataModel.loadFollowing(this.currentUser);
+        console.log("this list", templist);
+        this.friendList=[];
+        for (let i of templist){
+          for (let otheruser of this.otherUsers){
+            if (i.docUserId == otheruser.userId){
+              otheruser.status = "following";
+              this.friendList.push(otheruser);
+            }
+          }
+        }
+        console.log("whi am I follow",this.friendList);
+       this.setState({followingList:this.friendList})
+        
+        }
+
+      handleCancel=()=>{
+      
         this.setState({ 
          
           people: this.otherUsers
          });
+      };
+      
+      findMentor =()=>{
+      
+        let query = this.state.people.filter(e => e.isMentor == true);
+        let whatToShow;
+        if (this.state.chipMentor == true){
+          //it's now filtering mentor
+          whatToShow = this.otherUsers
+        }else{
+          whatToShow = query
+        }
+          this.setState({ 
+            chipMentor:!this.state.chipMentor,
+            people:whatToShow
+           });
       }
+
+      findFollowing =async()=>{
+        let templist =  await this.dataModel.loadFollowing(this.currentUser);
+        let query;
+        for (let temp of templist){
+          query= this.state.people.filter(e => e.userId ==temp.docUserId);
+          console.log("query",query);
+        };
+        let whatToShow;
+        if (this.state.chipFollowing == true){
+          //it's now filtering following
+          whatToShow = this.otherUsers
+        }else{
+          whatToShow = query
+        }
+       
+      
+          this.setState({ 
+            chipFollowing:!this.state.chipFollowing,
+            people:  whatToShow
+           });
+      }
+
       handleToggleView=()=>{
         let value;
         let style;
@@ -125,6 +181,7 @@ export class DesignersScreen extends React.Component {
           <View style={designerStyles.container}>
             <View style={designerStyles.peopleListContainer}>
               <FlatList
+               keyExtractor={(item, index) => index.toString()}
                 numColumns={this.state.numofCol}
                 key={this.state.numofCol}
                 data={this.state.people}
@@ -167,6 +224,12 @@ export class DesignersScreen extends React.Component {
                     inputStyle={{fontSize:16}}
                     containerStyle={{marginVertical:10}}
                   />
+                  <View style={designerStyles.chipContainer}>
+                      <Chip testID='mentor' value="following"  selected={this.state.chipFollowing} onPress={()=>this.findFollowing()}>
+                      Following</Chip>
+                    <Chip testID='mentor' value="mentor" selected={this.state.chipMentor} onPress={()=>this.findMentor()}>
+                      Mentor</Chip>
+                    </View>
                   </View>
                 }
                 renderItem={({item, index})=> {

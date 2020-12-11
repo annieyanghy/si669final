@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons'; 
@@ -110,9 +110,7 @@ class Tabs extends React.Component {
 }
 
       getTabBarVisibility = (route) => {
-        const routeName = route.state
-            ? route.state.routes[route.state.index].name
-            : '';
+        const routeName = getFocusedRouteNameFromRoute(route);
 
         if (routeName === 'ChatScreen') {
             return false;
@@ -130,7 +128,7 @@ class Tabs extends React.Component {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
-            if (route.name === 'Profile Stack') {
+            if (route.name === 'Profiles') {
               iconName = focused
                 ? 'account-circle' : 'account-circle-outline';
             } else if (route.name === 'Designers') {
@@ -148,7 +146,7 @@ class Tabs extends React.Component {
           fontSize: 24
         }}
       >
-        <Tab.Screen name="Profile Stack" component={ProfileStackScreen} />
+        <Tab.Screen name="Profiles" component={ProfileStackScreen} />
         <Tab.Screen name="Designers" component={DesignerStackScreen} />
         <Tab.Screen name="Chats" component={ChatStackScreen} 
               options={({ route }) => ({

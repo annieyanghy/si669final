@@ -95,7 +95,7 @@ export const profileStyles = StyleSheet.create({
         alignItems: 'stretch',
         justifyContent: 'flex-start',
         paddingHorizontal: 20,
-        paddingVertical: 20,
+        paddingVertical: 2,
     },
         
     infoContainer:{
@@ -121,11 +121,11 @@ export const profileStyles = StyleSheet.create({
                 // backgroundColor: 'lightblue',
             },
         actionContainer:{
-            flex: 0.08,
+            flex: 0.1,
             flexDirection: "row",
             alignItems: 'flex-start',
             justifyContent: 'flex-end',
-            // backgroundColor:'pink'
+            backgroundColor:'pink'
         },
         linkContainer:{
             flex: 1,
@@ -211,6 +211,16 @@ export const profileStyles = StyleSheet.create({
                     borderBottomWidth:1,
                     borderBottomColor: colors.outline
                 },
+                infoInput_Focus:{
+                  flex: 0.9,
+                  flexDirection: "column",
+                  // backgroundColor: '#888',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 16,
+                  borderBottomWidth:2,
+                  borderBottomColor: colors.primary
+              },
     dividerStyle:{
         marginVertical:20,
         backgroundColor: colors.primary, 
@@ -240,7 +250,7 @@ export const profileStyles = StyleSheet.create({
             flex: 0.5,
             flexDirection: "column",
             alignItems:'center',
-            justifyContent: 'flex-start',
+            justifyContent: 'center',
            
             shadowOffset:{
                 width:5,
@@ -262,6 +272,49 @@ export const profileStyles = StyleSheet.create({
             },
         
     });
+
+    export const portfoEditStyles = StyleSheet.create({
+    
+      container: {
+          flex: 1,
+          backgroundColor: 'orange',
+          alignItems: 'stretch',
+          justifyContent: 'flex-start',
+          paddingHorizontal: 20,
+          // paddingVertical: 5,
+      },
+          actionContainer:{
+              flex: 0.1,
+              flexDirection: "row",
+              alignItems: 'flex-start',
+              justifyContent: 'flex-end',
+              backgroundColor:'pink'
+          },
+          portfoImageContainer:{
+              flex: 0.5,
+              flexDirection: "column",
+              alignItems:'center',
+              justifyContent: 'center',
+              shadowOffset:{
+                  width:5,
+                  height:5
+              },
+              shadowColor:colors.outline,
+              shadowOpacity:0.6,
+              shadowRadius:10,
+  
+          },
+              portfoImage:{
+                  resizeMode: 'contain',
+                  opacity:1,
+                  borderRadius:5,
+                  height:200,
+                  width:300,
+                  marginVertical:10,
+                  backgroundColor:'lightgray'
+              },
+          
+      });
 
     export const designerStyles = StyleSheet.create({
         container: {
@@ -368,7 +421,14 @@ export const profileStyles = StyleSheet.create({
                             backgroundColor:colors.primary, 
                             borderRadius:50,
                         
-                        }
+                        },
+                chipContainer:{
+                  flex: 1,
+                  flexDirection: "row",
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                  marginVertical:5,
+                }
       });
       export const chatFriendStyles = StyleSheet.create({
         container: {
@@ -527,11 +587,11 @@ export const profileStyles = StyleSheet.create({
           },
             inputRow: {
               flexDirection: 'row',
-              justifyContent: 'center',
+              justifyContent: "space-between",
               alignItems: 'center'
             },  
             inputBox: {
-              flex: 0.8,
+              flex: 1,
               borderWidth: 1,
               borderColor: colors.primaryDark,
               borderRadius: 6,
@@ -540,7 +600,66 @@ export const profileStyles = StyleSheet.create({
               height: 40,
               padding: 5,
               margin: 5
-            }
+            },
+            centeredView: {
+              flex: 1,
+              justifyContent: "flex-end",
+              alignItems: "stretch",
+              marginTop: 22,
+              backgroundColor:  'rgba(0, 0, 0, 0.5)',
+             
+            },
+            modalView: {
+              margin: 0,
+              flexDirection:'column',
+              backgroundColor: "white",
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              padding: 10,
+              overflow: 'hidden',
+              maxHeight:'80%',
+              // justifyContent:'stretch'
+              alignItems: "stretch",
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 2
+              },
+
+              shadowOpacity: 0.3,
+              shadowRadius: 5,
+              elevation: 5,
+              opacity:1,
+              marginBottom:0,
+            },
+            openButton: {
+              backgroundColor: "#F194FF",
+              borderRadius: 20,
+              padding: 10,
+              elevation: 2
+            },
+            textStyle: {
+              color: "white",
+              fontWeight: "bold",
+              textAlign: "center"
+            },
+            modalText: {
+              marginBottom: 15,
+              textAlign: "center"
+            },
+            modalBox:{
+              // backgroundColor: 'ivory',
+              flex: 1,
+            },
+            cardContainer:{
+              flex: 1,
+              
+              flexDirection:'row',
+              // backgroundColor: 'gray',
+              alignItems: 'center',
+              // justifyContent: 'center',
+              marginTop:10
+          },
       });
 
 export const styles = StyleSheet.create({

@@ -16,7 +16,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Avatar, Accessory, Divider, Icon, SocialIcon } from "react-native-elements";
-import { Card, Title, Paragraph, Button, IconButton, Subheading, Caption, Headline } from 'react-native-paper';
+import { Card, Title, Paragraph, Button, IconButton, Subheading, Caption, Headline,Chip } from 'react-native-paper';
 
 
 import { getDataModel } from "./DataModel";
@@ -71,6 +71,7 @@ export class ProfileScreen extends React.Component {
       portDscrp: "",
       portURL: "",
       portfoImage:"",
+      isMentor:false,
     };
   }
 
@@ -85,9 +86,9 @@ export class ProfileScreen extends React.Component {
 
   };
 
-  componentWillUnmount =()=>{
-    this.subscribeToPortfo();
-  }
+  // componentWillUnmount =()=>{
+  //   this.subscribeToPortfo();
+  // }
 
   onFocus = () => {
     this.subscribeToInfo();
@@ -111,7 +112,8 @@ export class ProfileScreen extends React.Component {
       infoSchool: this.userInfo.userSchool,
       infoCompany: this.userInfo.userCompany,
       infoWeb: this.userInfo.userWeb,
-      infoLinkedin: this.userInfo.userLinkedin
+      infoLinkedin: this.userInfo.userLinkedin,
+      isMentor:this.userInfo.isMentor
     });
   };
 
@@ -238,6 +240,8 @@ export class ProfileScreen extends React.Component {
                     <Subheading>{this.state.infoJobTitle}</Subheading>
                     <Caption>{this.state.infoSchool}</Caption>
                     <Caption>{this.state.infoCompany}</Caption>
+                    {this.state.isMentor?<Chip >Mentor</Chip>:null}
+                    
                   </View>
                   <View style={profileStyles.linkContainer}>
                     <SocialIcon
@@ -342,7 +346,7 @@ export class ProfileScreen extends React.Component {
                         <Button icon="delete" mode="outline" 
                         color={colors.primary}
                         labelStyle={{color:colors.primary}}
-                        onPress={()=>this.dataModel.onDeletePortfo(item, this.userId)}
+                        onPress={()=>this.dataModel.onDeletePortfo(item, this.userId,this.subscribeToPortfo)}
                         ></Button>
                       </Card.Actions>
                     </Card>

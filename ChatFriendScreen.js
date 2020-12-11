@@ -30,7 +30,7 @@ export class ChatFriendScreen extends React.Component {
 
         this.dataModel = getDataModel();
         this.currentUser = this.dataModel.fetchWhoIsUser();
-    
+        this.chatFriend=[];
         this.allUserInfo=[];
         this.allUserInfo = this.dataModel.deliverAllUserProfile();
      
@@ -57,7 +57,7 @@ export class ChatFriendScreen extends React.Component {
           search:'',
           toggleView:'left',
           styleView:chatFriendStyles.personRow,
-          numofCol:1
+         
         }
       }
     
@@ -67,30 +67,106 @@ export class ChatFriendScreen extends React.Component {
           "focus",
           this.onFocus
         );
-       
+        this.generateList();
+        // this.checkFollowing();
+        // this.checkChatFromFollower();
       }
     
       onFocus = () =>{
-       this.checkFollowing();
+        this.generateList();
+      //  this.checkFollowing();
+      //  this.checkChatFromFollower();
       }
 
-      checkFollowing = async ()=>{
-        console.log("hello chatfriend");
+      generateList = async()=>{
+        //check following
         let templist =  await this.dataModel.loadFollowing(this.currentUser);
-        console.log("tempkist",templist);
         this.friendList=[];
         for (let i of templist){
-          console.log("iii",i.docUserId);
-          this.user = await this.dataModel.loadProfile(i.docUserId);
-          //need a datamodel that directly return userinfo by inputing userId
+          for (let otheruser of this.otherUsers){
+            if (i.docUserId == otheruser.userId){
+              otheruser.status = "following";
+              this.friendList.push(otheruser);
+            }
+          }
+        }
+        this.chatlist=[];
+            let id =  this.currentUser.userId;
+            await this.dataModel.checkChatFromFollower(id);
+            let followerId = this.dataModel.returnFollowerList();
+         
+            let followerList=[];
+            let followingList =[];
+            let mutualFollowList=[];
+            
+            for (let follower of followerId){
+              for (let following of templist){
+                for (let otheruser of this.otherUsers){
+                  console.log("following list", following);
+                  console.log("my follower", follower);
+                    //check followers
+                  if (follower == otheruser.userId && follower !==following.docUserId){
+                    otheruser.status = "follower";
+                    followerList.push(otheruser);
+                    this.chatFriend.push(otheruser);
+                  }else if(following.docUserId == otheruser.userId && follower !==following.docUserId){
+                      //check following
+                      otheruser.status = "following";
+                      followingList.push(otheruser);
+                      this.chatFriend.push(otheruser);
+                  }else if( following.docUserId == otheruser.userId && follower ==following.docUserId){
+                    //check mutual follow
+                    otheruser.status = "mutual";
+                    mutualFollowList.push(otheruser);
+                    this.chatFriend.push(otheruser);
+                  }
+                }
+              }
+            }
+            this.setState({people:this.chatFriend})
+
+      }
+
+      // checkFollowing = async ()=>{
+      //   let templist =  await this.dataModel.loadFollowing(this.currentUser);
+      //   this.friendList=[];
+      //   for (let i of templist){
+      //     for (let otheruser of this.otherUsers){
+      //       if (i.docUserId == otheruser.userId){
+      //         otheruser.status = "following";
+      //         this.friendList.push(otheruser);
+      //       }
+      //     }
+      //   }
+      //   this.setState({people:this.friendList})    
+      //   }
+
+        // checkChatFromFollower = async()=>{
           
-          console.log("heyhey",this.user);
-          this.friendList.push(this.user);
-        }
-        console.log("whi am I follow",this.friendList);
-       this.setState({people:this.friendList})
-        
-        }
+        //   this.chatlist=[];
+        //     let id =  this.currentUser.userId;
+        //     await this.dataModel.checkChatFromFollower(id);
+        //     let followerId = this.dataModel.returnFollowerList();
+         
+        //     let followerList=[];
+        //     for (let i of followerId){
+        //       for (let following of this.friendList){
+        //         for (let otheruser of this.otherUsers){
+        //           console.log("following list", following);
+        //           console.log("my follower", i);
+        //           if (i == otheruser.userId && i !==following.userId){
+        //             otheruser.status = "follower";
+        //             followerList.push(otheruser);
+        //           }
+        //         }
+        //       }
+             
+              
+        //     }
+        //     this.chatlist = this.friendList.concat(followerList);
+        //     console.log("chatlist",this.chatlist);
+        //     this.setState({people:this.chatlist})
+        // }
 
       updateSearch = (search) => {
         console.log(search);
@@ -101,7 +177,7 @@ export class ChatFriendScreen extends React.Component {
           query = this.state.people.filter(e => 
             e.userName.toLowerCase().includes(format)|| e.userSchool.toLowerCase().includes(format)|| e.userCompany.toLowerCase().includes(format));
         }else if(search.length==0){
-          query = this.otherUsers
+          query = this.chatlist
         }
 
         this.setState({ 
@@ -115,7 +191,7 @@ export class ChatFriendScreen extends React.Component {
        
         this.setState({ 
          
-          people: this.otherUsers
+          people:this.chatlist
          });
       }
       handleToggleView=()=>{
@@ -147,32 +223,11 @@ export class ChatFriendScreen extends React.Component {
           <View style={chatFriendStyles.container}>
             <View style={chatFriendStyles.peopleListContainer}>
               <FlatList
-                numColumns={this.state.numofCol}
-                key={this.state.numofCol}
+                numColumns={1}
                 data={this.state.people}
+                keyExtractor={(item, index) => index.toString()}
                 ListHeaderComponent={
                   <View>
-                    <ToggleButton.Row
-                      onValueChange={(value)=>this.setState({toggleView:value})}
-                      value={this.state.toggleView}
-                    >
-                      <ToggleButton
-                          icon="view-stream"
-                          value="left"
-                          // status={status}
-                          onPress={this.handleToggleView}
-                          style={{height:32, width:32,borderColor:colors.outline}}
-                          size={18}
-                        />
-                         <ToggleButton
-                          icon="view-grid"
-                          value="right"
-                          // status={status}
-                          style={{height:32, width:32,borderColor:colors.outline}}
-                          onPress={this.handleToggleView}
-                          size={18}
-                        />
-                    </ToggleButton.Row>
                   <SearchBar
                     placeholder="Search..."
                     onChangeText={this.updateSearch}
@@ -213,10 +268,12 @@ export class ChatFriendScreen extends React.Component {
                             </Avatar>
                       </View>
                       <View style={chatFriendStyles.designerInfoContainer}>
+                      <Caption>{ item.status == "follower"? item.userName + " follows you.":null}</Caption>
                           <Title>{item.userName}</Title>
                           <Subheading>{item.userJob}</Subheading>
                           
                           <Caption>{item.userCompany} / {item.userSchool}</Caption>
+                         
 
                 
                         </View>
@@ -229,6 +286,7 @@ export class ChatFriendScreen extends React.Component {
                           onPress={()=> this.props.navigation.navigate("ChatScreen", {
                                           currentUser: this.currentUser,
                                           otherUser:item,
+                                         
                                           // userId: this.userId,
                                           // portfoKey: item.key,
                                           // portfoContent: item
