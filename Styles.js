@@ -1,10 +1,13 @@
 import { StyleSheet } from 'react-native';
 
 export const colors = {
-  primary: '#7986CB', // MD Amber 500
-  primaryDark: '#303F9F', // MD Brown 300
-  primaryLight: '#E8EAF6', // MD Amber 200
-  outline: '#BDBDBD' // MD Gray 400
+  primary: '#728f8e', // MD Teal 100 Dark
+  primaryDark: '#456160', // MD 
+  primaryLight: '#a0bebd', // MD Teal 100
+  outline: '#BDBDBD', // MD Gray 400
+  secondary: '#bcaaa4', // MD Brown 200
+  secondaryDark: '#8c7b75',
+  secondaryLight:'#d1c1b8',
 }
 
 
@@ -91,7 +94,7 @@ export const profileStyles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        // backgroundColor: 'orange',
+        backgroundColor:'white',
         alignItems: 'stretch',
         justifyContent: 'flex-start',
         paddingHorizontal: 20,
@@ -125,7 +128,7 @@ export const profileStyles = StyleSheet.create({
             flexDirection: "row",
             alignItems: 'flex-start',
             justifyContent: 'flex-end',
-            backgroundColor:'pink'
+            // backgroundColor:'pink'
         },
         linkContainer:{
             flex: 1,
@@ -173,7 +176,8 @@ export const profileStyles = StyleSheet.create({
                 flex: 0.4,
                 flexDirection: "column",
                 // backgroundColor: '#e4e',
-                color:colors.primaryDark,
+                color:colors.primary,
+                fontWeight:'700',
                 alignItems: 'center',
                 justifyContent: 'center',
                 alignSelf:'flex-start',
@@ -195,7 +199,7 @@ export const profileStyles = StyleSheet.create({
                     alignItems:'flex-end',
                     justifyContent: 'flex-end',
                     fontSize: 18,
-                    color:"black",
+                    color:colors.primaryLight,
                     // backgroundColor: 'red',
                     paddingRight: 0,
                     paddingVertical: 2,
@@ -270,6 +274,12 @@ export const profileStyles = StyleSheet.create({
                 marginVertical:10,
                 backgroundColor:'lightgray'
             },
+            mentorToggle:{
+              flexDirection: "row",
+              alignItems:'center',
+              justifyContent: 'flex-start',
+
+            }
         
     });
 
@@ -277,7 +287,7 @@ export const profileStyles = StyleSheet.create({
     
       container: {
           flex: 1,
-          backgroundColor: 'orange',
+          // backgroundColor: 'orange',
           alignItems: 'stretch',
           justifyContent: 'flex-start',
           paddingHorizontal: 20,
@@ -288,7 +298,7 @@ export const profileStyles = StyleSheet.create({
               flexDirection: "row",
               alignItems: 'flex-start',
               justifyContent: 'flex-end',
-              backgroundColor:'pink'
+              // backgroundColor:'pink'
           },
           portfoImageContainer:{
               flex: 0.5,
@@ -428,6 +438,10 @@ export const profileStyles = StyleSheet.create({
                   alignItems: 'center',
                   justifyContent: 'flex-start',
                   marginVertical:5,
+                },
+                chip:{
+                  marginHorizontal:2,
+                  
                 }
       });
       export const chatFriendStyles = StyleSheet.create({
@@ -559,7 +573,7 @@ export const profileStyles = StyleSheet.create({
               margin: 5, 
               marginRight: 20,
               marginLeft: 40,
-              backgroundColor: 'lightblue',
+              backgroundColor: colors.secondaryLight,
               borderRadius: 6
             },
               chatTextSelf: {

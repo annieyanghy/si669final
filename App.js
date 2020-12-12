@@ -141,8 +141,8 @@ class Tabs extends React.Component {
           },
         })}
         tabBarOptions={{
-          activeTintColor: 'teal',
-          inactiveTintColor: 'gray',
+          activeTintColor: '#728f8e',
+          inactiveTintColor: '#BDBDBD',
           fontSize: 24
         }}
       >

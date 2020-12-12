@@ -133,6 +133,16 @@ return (
         scrollEnabled={true}
     >
         <ScrollView>
+        <View style={profileStyles.mentorToggle}>
+            <Text>I want to be a Mentor</Text>
+            <Switch 
+                trackColor={{ false: "#767577", true: colors.primaryLight }}
+                    thumbColor={this.state.isEnabled ? colors.secondaryLight : "#f4f3f4"}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={this.toggleSwitch}
+                    value={this.state.isEnabled}
+            ></Switch>
+        </View>
     
         <EditInfo icon={this.state.profileInfo[0].iconName} 
                                 label={this.state.profileInfo[0].label} 
@@ -186,14 +196,8 @@ return (
                             onChange = {(text) =>{this.setState({infoJobTitle:text.nativeEvent.text})}}
                             value = {this.state.infoJobTitle}
         />
-        <Text>I want to be a Mentor</Text>
-       <Switch 
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={this.state.isEnabled ? "#f5dd4b" : "#f4f3f4"}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={this.toggleSwitch}
-            value={this.state.isEnabled}
-       ></Switch>
+       
+        
    
     </ScrollView>
     </KeyboardAvoidingView>

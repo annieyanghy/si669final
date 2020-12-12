@@ -134,11 +134,17 @@ export class DesignersScreen extends React.Component {
 
       findFollowing =async()=>{
         let templist =  await this.dataModel.loadFollowing(this.currentUser);
-        let query;
+        console.log("templist",templist);
+        let query=[];
+        // query= this.state.people.filter(e => e.userId.some(id=> id== templist.docUserId) );
         for (let temp of templist){
-          query= this.state.people.filter(e => e.userId ==temp.docUserId);
-          console.log("query",query);
+          for (let people of this.state.people )
+          if (people.userId == temp.docUserId){
+            query.push(people);
+          }
         };
+        
+        console.log("query",query);
         let whatToShow;
         if (this.state.chipFollowing == true){
           //it's now filtering following
@@ -146,8 +152,6 @@ export class DesignersScreen extends React.Component {
         }else{
           whatToShow = query
         }
-       
-      
           this.setState({ 
             chipFollowing:!this.state.chipFollowing,
             people:  whatToShow
@@ -225,9 +229,9 @@ export class DesignersScreen extends React.Component {
                     containerStyle={{marginVertical:10}}
                   />
                   <View style={designerStyles.chipContainer}>
-                      <Chip testID='mentor' value="following"  selected={this.state.chipFollowing} onPress={()=>this.findFollowing()}>
+                      <Chip testID='mentor' style={designerStyles.chip} value="following"  selected={this.state.chipFollowing} onPress={()=>this.findFollowing()}>
                       Following</Chip>
-                    <Chip testID='mentor' value="mentor" selected={this.state.chipMentor} onPress={()=>this.findMentor()}>
+                    <Chip testID='mentor' style={designerStyles.chip} value="mentor" selected={this.state.chipMentor} onPress={()=>this.findMentor()}>
                       Mentor</Chip>
                     </View>
                   </View>
@@ -249,8 +253,8 @@ export class DesignersScreen extends React.Component {
                             source={{uri:item.profilePicURL}} 
                             rounded
                             icon={{name:'account',type:'material-community'}}
-                            iconStyle ={{ backgroundColor: colors.primaryLight }}
-                            placeholderStyle={{ backgroundColor: colors.primaryLight }}
+                            iconStyle ={{ backgroundColor: colors.secondaryLight }}
+                            placeholderStyle={{ backgroundColor: colors.secondaryLight }}
                             size="medium">
                             </Avatar>
                       </View>

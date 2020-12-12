@@ -144,25 +144,22 @@ export class ProfileScreen extends React.Component {
     let templist = await this.dataModel.loadPortfo(userId);
     this.userPortfo=[];
     this.list = templist;
-    console.log("idx idx",this.list);
+ 
     for (let idx of this.list ){
-      console.log("which one idx?",idx);
+    
       this.portfoPic = await this.dataModel.loadPortfoPic(userId,idx.key);
  
       idx.portfoPicURL =this.portfoPic;
       this.userPortfo.push(idx);
-      console.log("portfo pic which one ?",idx);
+
       this.onPortfoPicUpdate(this.portfoPic);
       this.onPortfoUpdate();
     }
-   
-    console.log("yoyoyo",this.userPortfo);
 
   };
 
   onPortfoUpdate = () => {
-    console.log("hi");
-    console.log("what's inside it yoyo",this.userPortfo);
+ 
     this.setState({
       portfoList: this.userPortfo,
     });
@@ -194,8 +191,8 @@ export class ProfileScreen extends React.Component {
                       avatarStyle={profileStyles.mainImage}
                       rounded
                       icon={{name:'account',type:'material-community'}}
-                      iconStyle ={{ backgroundColor: colors.primaryLight }}
-                      placeholderStyle={{ backgroundColor: colors.primaryLight }}
+                      iconStyle ={{ backgroundColor: colors.secondaryLight }}
+                      placeholderStyle={{ backgroundColor: colors.secondaryLight }}
                       size="large"
                     >
                       <Accessory
@@ -240,7 +237,10 @@ export class ProfileScreen extends React.Component {
                     <Subheading>{this.state.infoJobTitle}</Subheading>
                     <Caption>{this.state.infoSchool}</Caption>
                     <Caption>{this.state.infoCompany}</Caption>
-                    {this.state.isMentor?<Chip >Mentor</Chip>:null}
+                    {this.state.isMentor?
+                    <Chip style={{backgroundColor:colors.secondary}}
+                    textStyle={{color:'white'}}
+                    >Mentor</Chip>:null}
                     
                   </View>
                   <View style={profileStyles.linkContainer}>
