@@ -125,7 +125,7 @@ render() {
                 keyboardVerticalOffset={10}>
                 <View style={loginStyles.topView}>
                 <Image 
-                    source={require('./assets/favicon.png')}
+                    source={require('./assets/SI669_LOGO.png')}
                     style={loginStyles.logoImage}
                 />
                 </View>

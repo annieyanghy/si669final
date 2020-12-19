@@ -20,16 +20,19 @@ export const loginStyles = StyleSheet.create({
         paddingTop: 20
     },
         topView: {
-        flex: 0.3,
+        flex: 0.5,
         alignItems: 'center',
         justifyContent: 'flex-end',
         width: '100%',
+        // backgroundColor: 'lightgreen',
+        marginTop:50
+
         },
         logoImage: {
             alignItems: 'center',
             justifyContent: 'center',
-            width: '50%',
-            height: '50%',
+            width: '100%',
+            height: '100%',
             resizeMode: 'contain',
         },
         middleView: {
@@ -37,7 +40,7 @@ export const loginStyles = StyleSheet.create({
             justifyContent: 'flex-start',
             alignItems: 'center',
             width: '100%',
-            marginTop:100
+            marginTop:50
             //backgroundColor: 'lightgreen'
         },
         inputRow: {

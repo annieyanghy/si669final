@@ -85,10 +85,13 @@ export class DesignersScreen extends React.Component {
             e.userName.toLowerCase().includes(format)|| e.userSchool.toLowerCase().includes(format)|| e.userCompany.toLowerCase().includes(format));
         }else if(search.length==0){
           query = this.otherUsers
-        }
+        };
        
-        console.log(this.filteredPople)
-       
+        // console.log(this.filteredPople);
+        this.setState({ 	
+          search: search,	
+          people: query	
+         })
       };
 
       checkFollowing = async ()=>{
@@ -214,7 +217,7 @@ export class DesignersScreen extends React.Component {
                         />
                     </ToggleButton.Row>
                   <SearchBar
-                    placeholder="Type Here..."
+                    placeholder="Search..."
                     onChangeText={this.updateSearch}
                     value={this.state.search}
                     round={true}
@@ -236,6 +239,8 @@ export class DesignersScreen extends React.Component {
                     </View>
                   </View>
                 }
+
+
                 renderItem={({item, index})=> {
                   return (
                     <TouchableOpacity 

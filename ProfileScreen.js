@@ -264,7 +264,7 @@ export class ProfileScreen extends React.Component {
                   <View style={profileStyles.actionContainer}>
                     <Button icon="pencil" mode="text" 
                         color={colors.primary}
-                        style={{height:32}}
+                        style={{height:40}}
                         labelStyle={{color:colors.primary, fontSize:14}}
                         onPress={() =>
                         this.props.navigation.navigate("Edit Profile", {
@@ -274,34 +274,6 @@ export class ProfileScreen extends React.Component {
                       }
                         >Edit</Button>
                   </View>
-                  {/* <EditInfo
-                    icon={this.state.profileInfo[0].iconName}
-                    // label={this.state.profileInfo[0].label}
-                    info={this.state.infoName}
-                    placeholder={this.state.profileInfo[0].placeholder}
-                    editable={this.state.editable}
-                  />
-                  <EditInfo
-                    icon={this.state.profileInfo[1].iconName}
-                    // label={this.state.profileInfo[1].label}
-                    info={this.state.infoSchool}
-                    placeholder={this.state.profileInfo[1].placeholder}
-                    editable={this.state.editable}
-                  />
-                  <EditInfo
-                    icon={this.state.profileInfo[2].iconName}
-                    // label={this.state.profileInfo[2].label}
-                    info={this.state.infoCompany}
-                    placeholder={this.state.profileInfo[2].placeholder}
-                    editable={this.state.editable}
-                  /> */}
-                  {/* <EditInfo
-                    icon={this.state.profileInfo[3].iconName}
-                    label={this.state.profileInfo[3].label}
-                    info={this.state.infoWeb}
-                    placeholder={this.state.profileInfo[3].placeholder}
-                    editable={this.state.editable}
-                  /> */}
                     <Divider style={profileStyles.dividerStyle} />
                     <Title>My Portfolio</Title>
         </View>
