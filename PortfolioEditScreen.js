@@ -16,6 +16,9 @@ import {
 import { Card, Title, Paragraph, Button, IconButton, Subheading, Caption, Headline } from 'react-native-paper';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
+
 import { getDataModel } from "./DataModel";
 import { portfoEditStyles, colors } from "./Styles";
 import { EditInfo } from "./Component";
@@ -151,7 +154,6 @@ export class PortfolioEditScreen extends React.Component {
     console.log("hey doc doc pic key",this.portfoPicKey);
     let picData = this.props.route.params.picData;
     
-   
     let userId = this.props.route.params.userId;
     this.portfoPicFile = await this.dataModel.savePortfoImage(userId,this.portfoKey, picData, this.portfoPicKey, this.hi);
     let url = this.portfoPicFile.portfoPicURL;
@@ -208,9 +210,6 @@ export class PortfolioEditScreen extends React.Component {
     });
   };
 
-  // textFocus=()=>{
-  //   this.setState({isFocused:true})
-  // }
 
 
   render() {
@@ -234,7 +233,7 @@ export class PortfolioEditScreen extends React.Component {
         <View style={portfoEditStyles.actionContainer}>
                     <Button icon="pencil" mode="text" 
                         color={colors.primary}
-                        style={{height:32}}
+                        style={{height:40}}
                         labelStyle={{color:colors.primary, fontSize:14}}
                         onPress={() =>
                           ActionSheetIOS.showActionSheetWithOptions(
@@ -298,7 +297,7 @@ export class PortfolioEditScreen extends React.Component {
           textContentType='URL'
         
           onChange={(text) => {
-            this.setState({ portURL: +text.nativeEvent.text });
+            this.setState({ portURL: text.nativeEvent.text });
           }}
           value={this.state.portURL}
           // onFocus={()=>this.textFocus()}

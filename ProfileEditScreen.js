@@ -127,7 +127,7 @@ render(){
 return (
     <KeyboardAvoidingView
         style={profileStyles.container}
-        behavior={"padding"}
+        behavior={"position"}
         keyboardVerticalOffset={2}
         enabled={true}
         scrollEnabled={true}
