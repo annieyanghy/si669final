@@ -82,26 +82,18 @@ export class ProfileScreen extends React.Component {
       this.onFocus
     );
     this.loadPic();
-   
 
   };
-
-  // componentWillUnmount =()=>{
-  //   this.subscribeToPortfo();
-  // }
 
   onFocus = () => {
     this.subscribeToInfo();
     this.subscribeToUserPic();
     this.subscribeToPortfo();
-    // this.loadPortfoPic();
-
   };
 
   subscribeToInfo = async () => {
     let userId = this.props.route.params.userId;
     this.userInfo = await this.dataModel.loadProfile(userId);
-    console.log("profile page subscribe", this.userInfo);
     this.onInfoUpdate();
   };
 
@@ -124,12 +116,15 @@ export class ProfileScreen extends React.Component {
   }
 
   subscribeToUserPic = async()=>{
-    let picData = this.props.route.params.picData;
+    if (this.props.route.params.picData){
+      let picData = this.props.route.params.picData;
 
-    let userId = this.props.route.params.userId;
-    let url = await this.dataModel.saveProfileImage(userId, picData);
-   
-    this.onPicUpdate(url);
+      let userId = this.props.route.params.userId;
+      let url = await this.dataModel.saveProfileImage(userId, picData);
+     
+      this.onPicUpdate(url);
+    }
+  
   }
 
   onPicUpdate = (pic)=>{

@@ -86,7 +86,7 @@ export class PortfolioEditScreen extends React.Component {
       portTitle: initTitle,
       portDscrp: initDscrp,
       portURL: initURL,
-      portfoImage:'',
+      portfoImage:' ',
       isFocused:false
     };
   }
@@ -95,8 +95,6 @@ export class PortfolioEditScreen extends React.Component {
 
 
   componentDidMount = () => {
-    // console.log("profile page",this.userInfo);
-    // console.log(this.props.route);
     this.focusUnsubscribe = this.props.navigation.addListener(
       "focus",
       this.onFocus
@@ -108,70 +106,67 @@ export class PortfolioEditScreen extends React.Component {
   };
 
   onFocus = () => {
-  
     this.subscribeToPortfoPic();
     this.subscribeToThisPortfo();
-   
-  
-
   };
 
   subscribeToThisPortfo = async () => {
-    let userId = this.props.route.params.userId;
-    this.userThisPortfo = await this.dataModel.loadThisPortfo(userId, this.portfoKey);
-    console.log("holaaa",this.userThisPortfo);
-    // cannot fetch a list, why?    
-    this.onPortfoUpdate();
+    if (this.props.route.params.userId){
+      let userId = this.props.route.params.userId;
+      this.userThisPortfo = await this.dataModel.loadThisPortfo(userId, this.portfoKey);
+      // cannot fetch a list, why?    
+      this.onPortfoUpdate();
+    }
+   
   };
 
   onPortfoUpdate = () => {
-    console.log("hi");
-    this.setState({
-      portTitle: this.userThisPortfo.portfoTitle,
-      portDscrp: this.userThisPortfo.portfoDscrp,
-      portURL: this.userThisPortfo.portfoURL,
-    });
-   
+    if (this.props.route.params.userId){
+      this.setState({
+        portTitle: this.userThisPortfo.portfoTitle,
+        portDscrp: this.userThisPortfo.portfoDscrp,
+        portURL: this.userThisPortfo.portfoURL,
+      });
+    }
   };
 
  
   loadPic = async()=>{
-    let userId = this.props.route.params.userId;
-    this.portfoPic = await this.dataModel.loadPortfoPic(userId, this.portfoKey);
-    console.log(".portfoPicURL",this.portfoPic);
-    // let url = this.portfoPic.portfoPicUR;
-    // why I cannot return a whole data from loadPortfoPic
-    let doc = this.dataModel.getPortfoPicData();
-    this.portfoPicKey = doc[0].key;
-    console.log("docdoc", this.portfoPicKey);
-    this.onPicUpdate( this.portfoPic);
-    this.subscribeToPortfoPic();
+    if (this.portfoKey){
+      let userId = this.props.route.params.userId;
+      this.portfoPic = await this.dataModel.loadPortfoPic(userId, this.portfoKey);
+      console.log(".portfoPicURL",this.portfoPic);
+      // let url = this.portfoPic.portfoPicUR;
+      // why I cannot return a whole data from loadPortfoPic
+      let doc = this.dataModel.getPortfoPicData();
+      this.portfoPicKey = doc[0].key;
+      console.log("docdoc", this.portfoPicKey);
+      this.onPicUpdate( this.portfoPic);
+      this.subscribeToPortfoPic();
+    }
+   
   }
 
   subscribeToPortfoPic = async()=>{
-    console.log(this.mode);
-    console.log("what's the matter pic",this.portfoPic);
-    console.log("hey doc doc pic key",this.portfoPicKey);
-    let picData = this.props.route.params.picData;
+    let picData;
+    let userId;
+    if (this.props.route.params.picData){
+      picData = this.props.route.params.picData;
     
-    let userId = this.props.route.params.userId;
-    this.portfoPicFile = await this.dataModel.savePortfoImage(userId,this.portfoKey, picData, this.portfoPicKey, this.hi);
-    let url = this.portfoPicFile.portfoPicURL;
-    this.portfoKey = this.portfoPicFile.portfoKey;
-    this.portfoPicKey = this.portfoPicFile.portfoPicKey;
-    // console.log("hey key key",this.portfoPicKey);
-    this.onPicUpdate(url);
+      userId = this.props.route.params.userId;
+      this.portfoPicFile = await this.dataModel.savePortfoImage(userId,this.portfoKey, picData, this.portfoPicKey);
+      let url = this.portfoPicFile.portfoPicURL;
+      this.portfoKey = this.portfoPicFile.portfoKey;
+      this.portfoPicKey = this.portfoPicFile.portfoPicKey;
+      this.onPicUpdate(url);
+    }
+
 
     //how to get this.portfoKey detected here after it's created by uploading picture?
   }
-  hi=()=>{
-    console.log("wowwowwow",this.portfoKey);
-  }
-  onPicUpdate = (pic)=>{
-    console.log("ni hao",this.portfoKey);
-    console.log("ni hao ah",this.portfoPicKey);
  
-    console.log("pic pic pic",pic);
+  onPicUpdate = (pic)=>{
+
     this.setState({
       portfoImage:pic
     })

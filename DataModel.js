@@ -272,15 +272,9 @@ class DataModel {
       imageObject,
       imageURL: downloadURL,
     };
-
-    console.log("I alreadyregistered!");
     let profilePicRef = await this.usersRef.doc(userId);
-
-
     await profilePicRef.update(imageDoc);
-    console.log("hiiii");
     this.loadProfilePic(userId);
-    console.log("loaded");
     return downloadURL;
   };
 
@@ -438,7 +432,6 @@ loadThisPortfo = async (userId, portfoKey) => {
       // console.log("user info",data);
       console.log("user portfoPic key",  this.PortfoPic[0].key);
     });
-    console.log("portfo pic", data);
     let url = data.portfoPicURL
     return  url;
   };
@@ -448,7 +441,7 @@ loadThisPortfo = async (userId, portfoKey) => {
   }
 
 
-  savePortfoImage = async (userId, portfoKey, portfoPicObject, portfoPicKey, update) => {
+  savePortfoImage = async (userId, portfoKey, portfoPicObject, portfoPicKey) => {
     if (this.theCallback) {
       this.theCallback(portfoPicObject);
     }
@@ -503,7 +496,7 @@ loadThisPortfo = async (userId, portfoKey) => {
     }
     console.log(portfoKey);
 
-    update();
+ 
     return portfoPicDoc;
   };
 
